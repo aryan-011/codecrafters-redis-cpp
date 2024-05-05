@@ -50,37 +50,34 @@ int main(int argc, char **argv) {
   cout << "Waiting for a client to connect...\n";
   
   int client_sock = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len);
-  if(client_sock<0){
-    cerr<< "Failed to accept connection\n";
+  if (client_sock < 0) {
+      cerr << "Failed to accept connection\n";
   }
 
-  cout << "Client connected\n";
+cout << "Client connected\n";
 
-  //receiving ping request
-  char buffer[1024];
-  int bytes_recvd = recv(client_sock, buffer, sizeof(buffer), 0);
+// Receiving ping request
+char buffer[1024];
+int bytes_recvd = recv(client_sock, buffer, sizeof(buffer), 0);
 
-  if(bytes_recvd<0){
+if (bytes_recvd < 0) {
     cerr << "Error in receiving data\n";
-        close(client_sock);
-        // close(server_fd);
-        // return 1;
-  }
-  else if (bytes_received == 0) {
-        cout << "Client disconnected\n";
-        close(client_sock);
-        // close(server_fd);
-        // return 0;
-  }
-  else{
+    close(client_sock);
+} else if (bytes_recvd == 0) {
+    cout << "Client disconnected\n";
+    close(client_sock);
+} else {
     cout << "Received: " << buffer << endl;
-      //sending pong 
+    // Sending pong 
     string response = "+PONG\r\n";
-    send(server_fd, response, strlen(response), 0);
-  }
+    send(client_sock, response.c_str(), response.length(), 0);
+}
 
+// Close the client socket after communication
+close(client_sock);
 
-  close(server_fd);
+// Close the server socket after serving the client
+close(server_fd);
 
   return 0;
 }
