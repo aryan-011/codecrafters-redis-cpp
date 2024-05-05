@@ -7,7 +7,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-using namespace std
+using namespace std;
 int main(int argc, char **argv) {
   // You can use print statements as follows for debugging, they'll be visible when running tests.
   cout << "Logs from your program will appear here!\n";
