@@ -62,15 +62,15 @@ int main(int argc, char **argv) {
 
   if(bytes_recvd<0){
     cerr << "Error in receiving data\n";
-        close(client_socket);
-        close(server_fd);
-        return 1;
+        close(client_sock);
+        // close(server_fd);
+        // return 1;
   }
   else if (bytes_received == 0) {
         cout << "Client disconnected\n";
-        close(client_socket);
-        close(server_fd);
-        return 0;
+        close(client_sock);
+        // close(server_fd);
+        // return 0;
   }
   else{
     cout << "Received: " << buffer << endl;
