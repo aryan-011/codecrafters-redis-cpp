@@ -54,14 +54,14 @@ int main(int argc, char **argv) {
   
   //receiving ping request
   char buffer[1024];
-  recv(sockfd, buffer, sizeof(buffer), 0);
+  recv(server_fd, buffer, sizeof(buffer), 0);
 
   // Print the response
   printf("Received: %s\n", buffer);
 
   //sending pong 
   char* response { "+PONG\r\n" };
-  send(client_fd, response, strlen(response), 0);
+  send(server_fd, response, strlen(response), 0);
 
   close(server_fd);
 
