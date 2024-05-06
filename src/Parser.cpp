@@ -4,7 +4,9 @@
 char upper(char c) {
     return toupper(c);
 }
-
+bool remove(const std::string& str)[
+     return !str.empty() && (str[0] == '*' || str[0] == '$');
+]
 std::vector<std::string> parseResp(char *buffer) {
     std::vector<std::string> tokens;
     std::string res(buffer);
@@ -23,6 +25,11 @@ std::vector<std::string> parseResp(char *buffer) {
     }
     std::string &cmnd = tokens[0];
     std::transform(cmnd.begin(), cmnd.end(), cmnd.begin(), upper);
+
+    tokens.erase(
+        std::remove_if(lines.begin(), lines.end(), remove),
+        tokens.end()
+    );
 
     return tokens;
 }
