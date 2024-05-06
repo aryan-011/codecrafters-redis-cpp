@@ -44,7 +44,7 @@ void handleClient(int client_sock){
           }
           else if(resp[0]=="GET"){
             string response="";
-            if(in_map.find(resp[1])==in_map.end){
+            if(in_map.count(resp[1])==0){
               response="$-1\r\n";
             }
             else{
