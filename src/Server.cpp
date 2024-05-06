@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <thread>
+#include <bits/stdc++.h>
 using namespace std;
 
 
@@ -88,7 +89,7 @@ int main(int argc, char **argv) {
   }
 
   for(auto &it:threads){
-    thread.join();
+    it.join();
   }
 
   close(server_fd);
