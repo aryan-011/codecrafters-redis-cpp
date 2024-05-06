@@ -27,7 +27,7 @@ std::vector<std::string> parseResp(char *buffer) {
     std::transform(cmnd.begin(), cmnd.end(), cmnd.begin(), upper);
 
     tokens.erase(
-        std::remove_if(lines.begin(), lines.end(), remove),
+        std::remove_if(tokens.begin(), tokens.end(), remove),
         tokens.end()
     );
 
