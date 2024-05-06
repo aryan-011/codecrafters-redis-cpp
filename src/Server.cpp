@@ -7,13 +7,37 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <thread>
 using namespace std;
+
+
+void handleClient(int client_sock){
+   while(true){  
+      char buffer[1024];
+      int bytes_recvd = recv(client_sock, buffer, sizeof(buffer), 0);
+
+      if (bytes_recvd < 0) {
+          cerr << "Error in receiving data\n";
+          close(client_sock);
+      } else if (bytes_recvd == 0) {
+          cout << "Client disconnected\n";
+          close(client_sock);
+      } else {
+          cout << "Received: " << buffer << endl;
+          // Sending pong 
+          string response = "+PONG\r\n";
+          send(client_sock, response.c_str(), response.length(), 0);
+      }
+    }
+    close(client_sock);
+}
+
+
 int main(int argc, char **argv) {
   // You can use print statements as follows for debugging, they'll be visible when running tests.
   cout << "Logs from your program will appear here!\n";
 
-  // Uncomment this block to pass the first stage
-  //
+
   int server_fd = socket(AF_INET, SOCK_STREAM, 0);
   if (server_fd < 0) {
    cerr << "Failed to create server socket\n";
@@ -46,6 +70,8 @@ int main(int argc, char **argv) {
   
   struct sockaddr_in client_addr;
   int client_addr_len = sizeof(client_addr);
+
+  vector<thread> threads;
   
   cout << "Waiting for a client to connect...\n";
   while(1){
@@ -57,29 +83,14 @@ int main(int argc, char **argv) {
 
     cout << "Client connected\n";
 
-    // Receiving ping request
-    while(true){  
-      char buffer[1024];
-      int bytes_recvd = recv(client_sock, buffer, sizeof(buffer), 0);
+    thread.emplace_back(handleClient,client_sock)
 
-      if (bytes_recvd < 0) {
-          cerr << "Error in receiving data\n";
-          close(client_sock);
-      } else if (bytes_recvd == 0) {
-          cout << "Client disconnected\n";
-          close(client_sock);
-      } else {
-          cout << "Received: " << buffer << endl;
-          // Sending pong 
-          string response = "+PONG\r\n";
-          send(client_sock, response.c_str(), response.length(), 0);
-      }
-      }
-
-    // Close the client socket after communication
-    close(client_sock);
   }
-  // Close the server socket after serving the client
+
+  for(auto &it:threads){
+    thread.join();
+  }
+
   close(server_fd);
 
   return 0;
