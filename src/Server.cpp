@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
 
     cout << "Client connected\n";
 
-    threads.emplace_back(handleClient,client_sock)
+    threads.emplace_back(handleClient,client_sock);
 
   }
 
