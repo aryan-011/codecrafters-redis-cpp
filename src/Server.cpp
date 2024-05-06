@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
   int client_addr_len = sizeof(client_addr);
   
   cout << "Waiting for a client to connect...\n";
-  for(int i=0;i<2;i++){
+  while(1){
 
     int client_sock = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len);
     if (client_sock < 0) {
@@ -58,21 +58,23 @@ int main(int argc, char **argv) {
     cout << "Client connected\n";
 
     // Receiving ping request
-    char buffer[1024];
-    int bytes_recvd = recv(client_sock, buffer, sizeof(buffer), 0);
+    while(true){  
+      char buffer[1024];
+      int bytes_recvd = recv(client_sock, buffer, sizeof(buffer), 0);
 
-    if (bytes_recvd < 0) {
-        cerr << "Error in receiving data\n";
-        close(client_sock);
-    } else if (bytes_recvd == 0) {
-        cout << "Client disconnected\n";
-        close(client_sock);
-    } else {
-        cout << "Received: " << buffer << endl;
-        // Sending pong 
-        string response = "+PONG\r\n";
-        send(client_sock, response.c_str(), response.length(), 0);
-    }
+      if (bytes_recvd < 0) {
+          cerr << "Error in receiving data\n";
+          close(client_sock);
+      } else if (bytes_recvd == 0) {
+          cout << "Client disconnected\n";
+          close(client_sock);
+      } else {
+          cout << "Received: " << buffer << endl;
+          // Sending pong 
+          string response = "+PONG\r\n";
+          send(client_sock, response.c_str(), response.length(), 0);
+      }
+      }
 
     // Close the client socket after communication
     close(client_sock);
