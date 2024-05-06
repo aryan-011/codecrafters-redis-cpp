@@ -9,6 +9,7 @@
 #include <netdb.h>
 #include <thread>
 #include <bits/stdc++.h>
+#include "Parser.h" 
 using namespace std;
 
 
@@ -26,8 +27,18 @@ void handleClient(int client_sock){
       } else {
           cout << "Received: " << buffer << endl;
           // Sending pong 
-          string response = "+PONG\r\n";
-          send(client_sock, response.c_str(), response.length(), 0);
+          vector<string> resp=parseResp(buffer);
+          
+          if(resp[0]=="ECHO"){
+            string response=encode(resp[1]);
+            send(client_sock, response.c_str(), response.length(), 0);
+          }
+          else if(resp[0]=="PING"){
+            string response = "+PONG\r\n";
+            send(client_sock, response.c_str(), response.length(), 0);
+          }
+
+          
       }
     }
     close(client_sock);
