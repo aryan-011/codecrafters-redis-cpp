@@ -12,7 +12,7 @@
 #include "Parser.h" 
 using namespace std;
 
-
+std::map<std::string, std::string> in_map;
 void handleClient(int client_sock){
    while(true){  
       char buffer[1024];
@@ -37,9 +37,24 @@ void handleClient(int client_sock){
             string response = "+PONG\r\n";
             send(client_sock, response.c_str(), response.length(), 0);
           }
+          else if( resp[0]=="SET"){
+            in_map[resp[1]]=resp[2];
+            string response=encode("OK");
+            send(client_sock, response.c_str(), response.length(), 0);
+          }
+          else if(resp[0]=="GET"){
+            string response="";
+            if(!in_map.find(resp[1])=in_map.end){
+              response="$-1\r\n";
+            }
+            else{
+              response=encode({in_map[resp[1]]});
+            }
+            send(client_sock, response.c_str(), response.length(), 0);
+          }
 
-          
-      }
+        }
+
     }
     close(client_sock);
 }
