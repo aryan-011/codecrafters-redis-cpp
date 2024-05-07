@@ -142,10 +142,11 @@ void handleMasterConnection()
     std::cerr << "Connection failed\n";
     return;
   }
-  const char *message = "*1\r\n$4\r\nping\r\n";
-  if (send(master_fd, message, strlen(message), 0) < 0)
+
+  std::string message =  "*1\r\n$4\r\nping\r\n";
+  if (send(master_fd, response.c_str(), response.length(), 0) < 0)
   {
-    std::cerr << "Send failed\n";
+    std::cerr << "send FAiled\n";
     return;
   }
 
