@@ -23,7 +23,7 @@ std::vector<std::string> parseResp(char *buffer) {
     if (!res.empty()) {
         tokens.push_back(res);
     }
-    for(auto cmnd:tokens){
+    for(auto &cmnd:tokens){
         std::transform(cmnd.begin(), cmnd.end(), cmnd.begin(), upper);
     }
 
