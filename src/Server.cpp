@@ -43,7 +43,8 @@ void handleClient(int client_sock){
             in_map[resp[1]]=resp[2];
             string response=encode("OK");
             if(resp.size()>3){
-              if(resp[3]=="PX" ||resp[3]=="px" || resp[3]=="pX" || resp[3]=="Px"){
+              std::transform(resp[3].begin(), resp[3].end(), resp[3].begin(), upper);
+              if(resp[3]=="PX"){
                 int expiry=stoi(resp[4]);
                 std::chrono::time_point<std::chrono::high_resolution_clock> strt = std::chrono::system_clock::now();
                 std::chrono::milliseconds duration(expiry);
@@ -65,6 +66,13 @@ void handleClient(int client_sock){
             }
             response = encode(response);
             send(client_sock, response.c_str(), response.length(), 0);
+          }
+          else if(resp[0]=="INFO"){
+            if(resp[1]=="replication"){
+              std::string respone="role:master";
+              response = encode(response);
+              send(client_sock, response.c_str(), response.length(), 0);
+            }
           }
 
         }
