@@ -45,9 +45,8 @@ void handleClient(int client_sock){
             if(resp.size()>3){
               if(resp[3]=="PX"){
                 int expiry=stoi(resp[4]);
-                std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> now = 
-    std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
-                expiry_map.insert({resp[1], now + std::chrono::milliseconds(expiry)});
+                std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+                expiry_map.insert({resp[1], now + std::chrono::milliseconds duration(expiry)});
               }
             }
             send(client_sock, response.c_str(), response.length(), 0);
@@ -59,15 +58,14 @@ void handleClient(int client_sock){
             if (in_map.count(resp[1]) == 0 || expiry_map.count(resp[1]) == 0) {
               response = encode("");
             } else {
-        
               auto expiryTime = expiry_map[resp[1]];
               std::cout<<expiryTime<<" "<<now;
               if (expiryTime > now) {
                 response = encode(in_map[resp[1]]);
               } else {
                 response = encode("");
-                in_map.erase(in_map.find(key));
-                expiry_map.erase(expiry_map.find(key));
+                in_map.erase(in_map.find(resp[1]));
+                expiry_map.erase(expiry_map.find(resp[1]));
               }
             }
 
