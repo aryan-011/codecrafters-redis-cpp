@@ -45,7 +45,8 @@ void handleClient(int client_sock){
             if(resp.size()>3){
               if(resp[3]=="PX"){
                 int expiry=stoi(resp[4]);
-                auto now = std::chrono::system_clock::now();
+                std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> now = 
+    std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
                 expiry_map.insert({resp[1], now + std::chrono::milliseconds(expiry)});
               }
             }
@@ -53,7 +54,8 @@ void handleClient(int client_sock){
           }
           else if (resp[0] == "GET") {
             string response = "";
-            auto now = std::chrono::system_clock::now();
+            std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> now = 
+    std::chrono::time_point_cast<std::chrono::milliseconds>(std::chrono::system_clock::now());
             if (in_map.count(resp[1]) == 0 || expiry_map.count(resp[1]) == 0) {
               response = encode("");
             } else {
