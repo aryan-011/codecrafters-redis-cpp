@@ -116,8 +116,9 @@ void handleClient(int client_sock)
       else if(resp[0]=="PSYNC"){
         std::string response="+FULLSYNC ";
         response+=master_replid;
+        response=response+" "+std::stoi(master_repl_offset);
         response+="\r\n";
-        response=encode(response);
+        // response=encode(response);
         send(client_sock, response.c_str(), response.length(), 0);
       }
     }
