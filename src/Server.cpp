@@ -59,15 +59,11 @@ void handleClient(int client_sock){
             string key = resp[1];
             if (expiry_map.count(key) != 0 && expiry_map[key] <= strt) {
                 in_map.erase(in_map.find(key));
-                expiry_map.erase(expiry_map.find(key));
-                response = encode(response);
-                send(client_sock, response.c_str(), response.length(), 0);
+                // expiry_map.erase(expiry_map.find(key));
             } else if (in_map.count(resp[1]) != 0) {
                 response = in_map[key];
-                response = encode(response);
-                send(client_sock, response.c_str(), response.length(), 0);
             }
-            response = encode(response);
+            response = encode(response+to_string(expiry_map[key]));
             send(client_sock, response.c_str(), response.length(), 0);
           }
 
