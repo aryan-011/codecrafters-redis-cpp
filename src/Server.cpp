@@ -21,6 +21,7 @@ int master_repl_offset = 0;
 std::string role = "master";
 std::string master_host = "";
 int master_port = -1;
+int port = 6379;
 
 void handleClient(int client_sock)
 {
@@ -106,6 +107,12 @@ void handleClient(int client_sock)
           send(client_sock, response.c_str(), response.length(), 0);
         }
       }
+      else if (resp[0] == "REPLCONF")
+      {
+        std::string response = "OK";
+        response=encode(response);
+        send(client_sock, response.c_str(), response.length(), 0);
+      }
     }
   }
   close(client_sock);
@@ -117,15 +124,16 @@ void handleMasterConnection()
   if (master_fd < 0)
   {
     cerr << "Failed to create slave server socket\n";
-    return ;
+    return;
   }
 
   struct sockaddr_in master_server_addr;
   master_server_addr.sin_family = AF_INET;
-  if (inet_pton(AF_INET, "127.0.0.1", &master_server_addr.sin_addr) <= 0) {
-        std::cerr << "Invalid address/Address not supported\n";
-        close(master_fd);
-        return;
+  if (inet_pton(AF_INET, "127.0.0.1", &master_server_addr.sin_addr) <= 0)
+  {
+    std::cerr << "Invalid address/Address not supported\n";
+    close(master_fd);
+    return;
   }
   master_server_addr.sin_port = htons(master_port);
 
@@ -138,7 +146,21 @@ void handleMasterConnection()
   if (send(master_fd, message, strlen(message), 0) < 0)
   {
     std::cerr << "Send failed\n";
-    return ;
+    return;
+  }
+
+  std::string message = "*3\r\n$8\r\nREPLCONF\r\n$14\r\nlistening-port\r\n$4\r\n6380\r\n";
+  if (send(master_fd, response.c_str(), response.length(), 0) < 0)
+  {
+    std::cerr << "send FAiled\n";
+    return;
+  }
+
+  std::string message = "*3\r\n$8\r\nREPLCONF\r\n$4\r\ncapa\r\n$6\r\npsync2\r\n";
+  if (send(master_fd, response.c_str(), response.length(), 0) < 0)
+  {
+    std::cerr << "send FAiled\n";
+    return;
   }
 }
 
@@ -147,7 +169,6 @@ int main(int argc, char **argv)
   // You can use print statements as follows for debugging, they'll be visible when running tests.
   cout << "Logs from your program will appear here!\n";
 
-  int port = -1;
   for (int i = 0; i < argc; ++i)
   {
     std::string arg = argv[i];
@@ -200,7 +221,7 @@ int main(int argc, char **argv)
   struct sockaddr_in server_addr;
   server_addr.sin_family = AF_INET;
   server_addr.sin_addr.s_addr = INADDR_ANY;
-  server_addr.sin_port = htons(port == -1 ? 6379 : port);
+  server_addr.sin_port = htons(port);
 
   if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) != 0)
   {
