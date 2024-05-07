@@ -150,14 +150,14 @@ void handleMasterConnection()
     return;
   }
 
-  std::string message = "*3\r\n$8\r\nREPLCONF\r\n$14\r\nlistening-port\r\n$4\r\n6380\r\n";
+  message = "*3\r\n$8\r\nREPLCONF\r\n$14\r\nlistening-port\r\n$4\r\n6380\r\n";
   if (send(master_fd, message.c_str(), message.length(), 0) < 0)
   {
     std::cerr << "send FAiled\n";
     return;
   }
 
-  std::string message = "*3\r\n$8\r\nREPLCONF\r\n$4\r\ncapa\r\n$6\r\npsync2\r\n";
+  message = "*3\r\n$8\r\nREPLCONF\r\n$4\r\ncapa\r\n$6\r\npsync2\r\n";
   if (send(master_fd, message.c_str(), message.length(), 0) < 0)
   {
     std::cerr << "send FAiled\n";
