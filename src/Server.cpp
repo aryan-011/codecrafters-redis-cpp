@@ -14,7 +14,7 @@
 using namespace std;
 
 std::map<std::string, std::string> in_map;
-std::map<std::string, std::chrono::system_clock::time_point> expiry_map;
+std::map<std::string, std::chrono::time_point<std::chrono::system_clock>> expiry_map;
 void handleClient(int client_sock){
    while(true){  
       char buffer[1024];
@@ -62,10 +62,12 @@ void handleClient(int client_sock){
         
               auto expiryTime = expiry_map[resp[1]];
               std::cout<<expiryTime<<" "<<now;
-              if (expiryTime >= now) {
+              if (expiryTime > now) {
                 response = encode(in_map[resp[1]]);
               } else {
                 response = encode("");
+                in_map.erase(in_map.find(key));
+                expiry_map.erase(expiry_map.find(key));
               }
             }
 
