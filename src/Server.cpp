@@ -69,7 +69,7 @@ void handleClient(int client_sock){
           }
           else if(resp[0]=="INFO"){
             if(resp[1]=="replication"){
-              std::string respone="role:master";
+              std::string response="role:master";
               response = encode(response);
               send(client_sock, response.c_str(), response.length(), 0);
             }
