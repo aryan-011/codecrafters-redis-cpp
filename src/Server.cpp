@@ -114,7 +114,7 @@ void handleClient(int client_sock)
         send(client_sock, response.c_str(), response.length(), 0);
       }
       else if(resp[0]=="PSYNC"){
-        std::string response="+FULLSYNC ";
+        std::string response="+FULLRESYNC ";
         response+=master_replid;
         response=response+" "+to_string(master_repl_offset);
         response+="\r\n";
