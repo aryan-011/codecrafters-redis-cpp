@@ -16,9 +16,9 @@ using namespace std;
 std::unordered_map<std::string, std::string> in_map;
 std::unordered_map<std::string, std::chrono::time_point<std::chrono::high_resolution_clock>> expiry_map;
 
-std::string role;
-std::string master_host;
-int  master_port;
+std::string role="master";
+std::string master_host="";
+int  master_port=-1;
 
 void handleClient(int client_sock  )
 {
@@ -119,7 +119,6 @@ int main(int argc, char **argv)
       if (i + 1 < argc)
       {
         port = std::stoi(argv[++i]);
-        break;
       }
       else
       {
@@ -140,11 +139,6 @@ int main(int argc, char **argv)
         return 1;
       }
     }
-  }
-  if (role.empty()){
-    role="master";
-    master_host="";
-    master_port=-1;
   }
 
   int server_fd = socket(AF_INET, SOCK_STREAM, 0);
