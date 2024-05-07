@@ -14,7 +14,7 @@
 using namespace std;
 
 std::unordered_map<std::string, std::string> in_map;
-std::unordered_map<std::string, std::chrono::time_point<std::chrono::system_clock>> expiry_map;
+std::unordered_map<std::string, std::chrono::time_point<std::chrono::high_resolution_clock>> expiry_map;
 void handleClient(int client_sock){
    while(true){  
       char buffer[1024];
@@ -45,9 +45,9 @@ void handleClient(int client_sock){
             if(resp.size()>3){
               if(resp[3]=="PX"){
                 int expiry=stoi(resp[4]);
-                std::chrono::time_point<std::chrono::system_clock> strt = std::chrono::system_clock::now();
+                std::chrono::time_point<std::chrono::high_resolution_clock> strt = std::chrono::system_clock::now();
                 std::chrono::milliseconds duration(expiry);
-                std::chrono::time_point<std::chrono::system_clock> expiration_time = strt + std::chrono::milliseconds(expiry);
+                std::chrono::time_point<std::chrono::high_resolution_clock> expiration_time = strt + std::chrono::milliseconds(expiry);
                 expiry_map[resp[1]]= expiration_time;
               }
             }
@@ -55,13 +55,17 @@ void handleClient(int client_sock){
           }
           else if (resp[0] == "GET") {
             string response = "";
-            std::chrono::time_point<std::chrono::system_clock> strt = std::chrono::system_clock::now();
+            std::chrono::time_point<std::chrono::high_resolution_clock> strt = std::chrono::high_resolution_clock::now();
             string key = resp[1];
             if (expiry_map.count(key) != 0 && expiry_map[key] <= strt) {
                 in_map.erase(in_map.find(key));
                 expiry_map.erase(expiry_map.find(key));
+                response = encode(response);
+                send(client_sock, response.c_str(), response.length(), 0);
             } else if (in_map.count(resp[1]) != 0) {
                 response = in_map[key];
+                response = encode(response);
+                send(client_sock, response.c_str(), response.length(), 0);
             }
             response = encode(response);
             send(client_sock, response.c_str(), response.length(), 0);
