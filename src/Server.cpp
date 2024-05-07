@@ -16,6 +16,8 @@ using namespace std;
 std::unordered_map<std::string, std::string> in_map;
 std::unordered_map<std::string, std::chrono::time_point<std::chrono::high_resolution_clock>> expiry_map;
 
+std::string master_replid="8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
+int master_repl_offset=0;
 std::string role="master";
 std::string master_host="";
 int  master_port=-1;
@@ -95,6 +97,10 @@ void handleClient(int client_sock  )
         {
           std::string response = "role:";
           response+=role;
+          if(role=="master"){
+            response=response+"\n"+"master_replid:"+master_replid+"\n";
+            response+="master_repl_offset"+master_repl_offset+"\n";
+          }
           response = encode(response);
           send(client_sock, response.c_str(), response.length(), 0);
         }
