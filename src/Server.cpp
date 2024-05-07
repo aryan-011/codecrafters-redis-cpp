@@ -9,10 +9,12 @@
 #include <netdb.h>
 #include <thread>
 #include <bits/stdc++.h>
+#include <chrono>
 #include "Parser.h" 
 using namespace std;
 
 std::map<std::string, std::string> in_map;
+std::map<std::string, std::chrono::system_clock::time_point> expiry_map;
 void handleClient(int client_sock){
    while(true){  
       char buffer[1024];
@@ -40,15 +42,25 @@ void handleClient(int client_sock){
           else if( resp[0]=="SET"){
             in_map[resp[1]]=resp[2];
             string response=encode("OK");
+            if(resp.size()>3){
+              if(resp[3]=="PX"){
+                int expiry=stoi(resp[4]);
+                auto now = std::chrono::system_clock::now();
+                expiry_map.insert({resp[1], now + std::chrono::milliseconds(expiry)});
+              }
+            }
             send(client_sock, response.c_str(), response.length(), 0);
           }
           else if(resp[0]=="GET"){
             string response="";
-            if(in_map.count(resp[1])==0){
-              response="$-1\r\n";
+            auto now = std::chrono::system_clock::now();
+            if(in_map.count(resp[1])==0 || expiry_map.count(resp[1])==0){
+              response=encode("");
             }
             else{
-              response=encode({in_map[resp[1]]});
+              if(expiry_map[resp[1]]>=now){
+                response=encode({in_map[resp[1]]});
+              }
             }
             send(client_sock, response.c_str(), response.length(), 0);
           }

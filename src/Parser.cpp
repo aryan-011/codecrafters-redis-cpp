@@ -23,8 +23,10 @@ std::vector<std::string> parseResp(char *buffer) {
     if (!res.empty()) {
         tokens.push_back(res);
     }
-    std::string &cmnd = tokens[0];
-    std::transform(cmnd.begin(), cmnd.end(), cmnd.begin(), upper);
+    for(auto cmnd:tokens){
+        std::transform(cmnd.begin(), cmnd.end(), cmnd.begin(), upper);
+    }
+
 
     tokens.erase(
         std::remove_if(tokens.begin(), tokens.end(), startsWithSpecialCharacter ),
