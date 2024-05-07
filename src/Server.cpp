@@ -120,7 +120,7 @@ void handleMasterConnection()
     return ;
   }
 
-  struct sockadder_in master_server_addr;
+  struct sockaddr_in master_server_addr;
   master_server_addr.sin_family = AF_INET;
   master_server_addr.sin_addr = inet_addr("127.0.0.1");
   master_server_addr.sin_port = htons(master_port);
