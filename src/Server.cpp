@@ -13,8 +13,8 @@
 #include "Parser.h" 
 using namespace std;
 
-std::map<std::string, std::string> in_map;
-std::map<std::string, std::chrono::time_point<std::chrono::system_clock>> expiry_map;
+std::unordered_map<std::string, std::string> in_map;
+std::unordered_map<std::string, std::chrono::time_point<std::chrono::system_clock>> expiry_map;
 void handleClient(int client_sock){
    while(true){  
       char buffer[1024];
