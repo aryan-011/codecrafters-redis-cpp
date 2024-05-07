@@ -122,7 +122,11 @@ void handleMasterConnection()
 
   struct sockaddr_in master_server_addr;
   master_server_addr.sin_family = AF_INET;
-  master_server_addr.s_addr = inet_addr("127.0.0.1");
+  if (inet_pton(AF_INET, "127.0.0.1", &master_server_addr.sin_addr) <= 0) {
+        std::cerr << "Invalid address/Address not supported\n";
+        close(master_fd);
+        return;
+  }
   master_server_addr.sin_port = htons(master_port);
 
   if (connect(master_fd, (struct sockaddr *)&master_server_addr, sizeof(master_server_addr)) < 0)
