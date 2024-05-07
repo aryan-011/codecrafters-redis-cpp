@@ -113,6 +113,13 @@ void handleClient(int client_sock)
         response=encode(response);
         send(client_sock, response.c_str(), response.length(), 0);
       }
+      else if(resp[0]=="PSYNC"){
+        std::string response="+FULLSYNC ";
+        response+=master_replid;
+        response+="\r\n";
+        response=encode(response);
+        send(client_sock, response.c_str(), response.length(), 0);
+      }
     }
   }
   close(client_sock);
@@ -166,6 +173,16 @@ void handleMasterConnection()
   cout << "Received: " << buffer << endl;
 
   message = "*3\r\n$8\r\nREPLCONF\r\n$4\r\ncapa\r\n$6\r\npsync2\r\n";
+  if (send(master_fd, message.c_str(), message.length(), 0) < 0)
+  {
+    std::cerr << "send FAiled\n";
+    return;
+  }
+
+  bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
+  cout << "Received: " << buffer << endl;
+
+  message = "*3\r\n$5\r\nPSYNC\r\n$1\r\n?\r\n$2\r\n-1\r\n";
   if (send(master_fd, message.c_str(), message.length(), 0) < 0)
   {
     std::cerr << "send FAiled\n";
