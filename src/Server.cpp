@@ -46,7 +46,8 @@ void handleClient(int client_sock){
               if(resp[3]=="PX"){
                 int expiry=stoi(resp[4]);
                 std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
-                expiry_map.insert({resp[1], now + std::chrono::milliseconds duration(expiry)});
+                std::chrono::milliseconds duration(expiry);
+                expiry_map[resp[1]]= now + duration;
               }
             }
             send(client_sock, response.c_str(), response.length(), 0);
