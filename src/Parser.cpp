@@ -35,5 +35,5 @@ std::vector<std::string> parseResp(char *buffer) {
 }
 
 std::string encode(std::string tmp) {
-    return "$" + std::to_string(tmp.length()) + "\r\n" + tmp + "\r\n";
+    return "$" + (tmp == nullptr ? std::to_string(-1) : (std::to_string(tmp.length()) + "\r\n")) + tmp + "\r\n";
 }
