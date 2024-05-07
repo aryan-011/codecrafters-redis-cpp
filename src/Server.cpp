@@ -63,7 +63,7 @@ void handleClient(int client_sock){
             } else if (in_map.count(resp[1]) != 0) {
                 response = in_map[key];
             }
-            response = encode(response+std::to_string(expiry_map[key]));
+            response = encode(response+std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(expiry_map[key].time_since_epoch()).count()));
             send(client_sock, response.c_str(), response.length(), 0);
           }
 
