@@ -142,7 +142,7 @@ void handleMasterConnection()
     std::cerr << "Connection failed\n";
     return;
   }
-  
+
   char buffer[1024];
   
   std::string message =  "*1\r\n$4\r\nping\r\n";
@@ -162,7 +162,7 @@ void handleMasterConnection()
     return;
   }
 
-  int bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
+  bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
   cout << "Received: " << buffer << endl;
 
   message = "*3\r\n$8\r\nREPLCONF\r\n$4\r\ncapa\r\n$6\r\npsync2\r\n";
@@ -172,7 +172,7 @@ void handleMasterConnection()
     return;
   }
 
-  int bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
+  bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
   cout << "Received: " << buffer << endl;
 
 }
