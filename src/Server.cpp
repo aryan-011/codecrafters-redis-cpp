@@ -91,7 +91,7 @@ void handleClient(int client_sock  )
       else if (resp[0] == "INFO")
       {
         std::transform(resp[1].begin(), resp[1].end(), resp[1].begin(), upper);
-        if (resp[1] == "replication")
+        if (resp[1] == "REPLICATION")
         {
           std::string response = "role:";
           response+=role;
