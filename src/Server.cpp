@@ -49,9 +49,10 @@ void handleClient(int client_sock){
                 std::chrono::milliseconds duration(expiry);
                 std::chrono::time_point<std::chrono::high_resolution_clock> expiration_time = strt + std::chrono::milliseconds(expiry);
                 expiry_map[resp[1]]= expiration_time;
+                send(client_sock, response.c_str(), response.length(), 0);
               }
             }
-            send(client_sock, response.c_str(), response.length(), 0);
+            // send(client_sock, response.c_str(), response.length(), 0);
           }
           else if (resp[0] == "GET") {
             string response = "";
@@ -59,12 +60,11 @@ void handleClient(int client_sock){
             string key = resp[1];
             if (expiry_map.count(key) != 0 && expiry_map[key] <= strt) {
                 in_map.erase(in_map.find(key));
-                // expiry_map.erase(expiry_map.find(key));
-                response = encode(response+std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(expiry_map[key].time_since_epoch()).count()));
+                expiry_map.erase(expiry_map.find(key));
             } else if (in_map.count(resp[1]) != 0) {
                 response = in_map[key];
-                response=encode(response);
             }
+            response = encode(response);
             send(client_sock, response.c_str(), response.length(), 0);
           }
 
