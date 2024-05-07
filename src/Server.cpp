@@ -41,7 +41,7 @@ void handleClient(int client_sock){
           }
           else if( resp[0]=="SET"){
             in_map[resp[1]]=resp[2];
-            string response=encode("OK");
+            string response=encode(resp[3]);
             if(resp.size()>3){
               if(resp[3]=="PX"){
                 int expiry=stoi(resp[4]);
@@ -49,10 +49,9 @@ void handleClient(int client_sock){
                 std::chrono::milliseconds duration(expiry);
                 std::chrono::time_point<std::chrono::high_resolution_clock> expiration_time = strt + std::chrono::milliseconds(expiry);
                 expiry_map[resp[1]]= expiration_time;
-                send(client_sock, response.c_str(), response.length(), 0);
               }
             }
-            // send(client_sock, response.c_str(), response.length(), 0);
+            send(client_sock, response.c_str(), response.length(), 0);
           }
           else if (resp[0] == "GET") {
             string response = "";
