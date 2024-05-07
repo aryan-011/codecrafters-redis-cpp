@@ -20,7 +20,7 @@ std::string role="master";
 std::string master_host="";
 int  master_port=-1;
 
-void handleClient(int client_sock , bool whether_slave )
+void handleClient(int client_sock  )
 {
   while (true)
   {
