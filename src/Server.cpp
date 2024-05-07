@@ -18,7 +18,7 @@ std::unordered_map<std::string, std::chrono::time_point<std::chrono::high_resolu
 
 std::string role="master";
 std::string master_host="";
-std::int  master_port="";
+int  master_port=-1;
 
 void handleClient(int client_sock , bool whether_slave )
 {
@@ -132,6 +132,11 @@ int main(int argc, char **argv)
         role="slave";
         master_host = argv[++i];
         mater_port = std::stoi(argv[++i]);
+      }
+      else
+      {
+        std::cerr << "Error: --port requires an argument" << std::endl;
+        return 1;
       }
     }
   }
