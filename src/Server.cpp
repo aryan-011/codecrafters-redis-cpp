@@ -51,17 +51,22 @@ void handleClient(int client_sock){
             }
             send(client_sock, response.c_str(), response.length(), 0);
           }
-          else if(resp[0]=="GET"){
-            string response="";
+          else if (resp[0] == "GET") {
+            string response = "";
             auto now = std::chrono::system_clock::now();
-            if(in_map.count(resp[1])==0 || expiry_map.count(resp[1])==0){
-              response=encode("");
-            }
-            else{
-              if(expiry_map[resp[1]]>=now){
-                response=encode({in_map[resp[1]]});
+            if (in_map.count(resp[1]) == 0 || expiry_map.count(resp[1]) == 0) {
+              response = encode("");
+            } else {
+        
+              auto expiryTime = expiry_map[resp[1]];
+              std::cout<<expiryTime<<" "<<now;
+              if (expiryTime >= now) {
+                response = encode(in_map[resp[1]]);
+              } else {
+                response = encode("");
               }
             }
+
             send(client_sock, response.c_str(), response.length(), 0);
           }
 
