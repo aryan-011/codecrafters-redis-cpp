@@ -16,9 +16,9 @@ using namespace std;
 std::unordered_map<std::string, std::string> in_map;
 std::unordered_map<std::string, std::chrono::time_point<std::chrono::high_resolution_clock>> expiry_map;
 
-std::string role="master";
-std::string master_host="";
-int  master_port=-1;
+std::string role;
+std::string master_host;
+int  master_port;
 
 void handleClient(int client_sock  )
 {
@@ -90,6 +90,7 @@ void handleClient(int client_sock  )
       }
       else if (resp[0] == "INFO")
       {
+        std::transform(resp[1].begin(), resp[1].end(), resp[1].begin(), upper);
         if (resp[1] == "replication")
         {
           std::string response = "role:";
@@ -126,7 +127,7 @@ int main(int argc, char **argv)
         return 1;
       }
     }
-    if(arg == "--replicaof"){
+    else if(arg == "--replicaof"){
       if(i+2<argc)
       {
         role="slave";
@@ -139,6 +140,11 @@ int main(int argc, char **argv)
         return 1;
       }
     }
+  }
+  if (role.empty()){
+    role="master";
+    master_host="";
+    master_port=-1;
   }
 
   int server_fd = socket(AF_INET, SOCK_STREAM, 0);
