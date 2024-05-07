@@ -99,7 +99,7 @@ void handleClient(int client_sock  )
           response+=role;
           if(role=="master"){
             response=response+"\n"+"master_replid:"+master_replid+"\n";
-            response=response+"master_repl_offset"+to_string(master_repl_offset)+"\n";
+            response=response+"master_repl_offset:"+to_string(master_repl_offset)+"\n";
           }
           response = encode(response);
           send(client_sock, response.c_str(), response.length(), 0);
