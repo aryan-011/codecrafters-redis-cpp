@@ -78,6 +78,19 @@ int main(int argc, char **argv) {
   // You can use print statements as follows for debugging, they'll be visible when running tests.
   cout << "Logs from your program will appear here!\n";
 
+  int port=-1;
+  for (int i = 0; i < argc; ++i) {
+        std::string arg = argv[i];
+        if (arg == "--port") {
+            if (i + 1 < argc) {
+                port = std::stoi(argv[++i]);
+                break;
+            } else {
+                std::cerr << "Error: --port requires an argument" << std::endl;
+                return 1;
+            }
+        }
+    }
 
   int server_fd = socket(AF_INET, SOCK_STREAM, 0);
   if (server_fd < 0) {
@@ -96,7 +109,7 @@ int main(int argc, char **argv) {
   struct sockaddr_in server_addr;
   server_addr.sin_family = AF_INET;
   server_addr.sin_addr.s_addr = INADDR_ANY;
-  server_addr.sin_port = htons(6379);
+  server_addr.sin_port = htons(port==-1?6379:port);
   
   if (bind(server_fd, (struct sockaddr *) &server_addr, sizeof(server_addr)) != 0) {
     cerr << "Failed to bind to port 6379\n";
