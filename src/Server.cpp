@@ -16,13 +16,13 @@ using namespace std;
 std::unordered_map<std::string, std::string> in_map;
 std::unordered_map<std::string, std::chrono::time_point<std::chrono::high_resolution_clock>> expiry_map;
 
-std::string master_replid="8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
-int master_repl_offset=0;
-std::string role="master";
-std::string master_host="";
-int  master_port=-1;
+std::string master_replid = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
+int master_repl_offset = 0;
+std::string role = "master";
+std::string master_host = "";
+int master_port = -1;
 
-void handleClient(int client_sock  )
+void handleClient(int client_sock)
 {
   while (true)
   {
@@ -96,10 +96,11 @@ void handleClient(int client_sock  )
         if (resp[1] == "REPLICATION")
         {
           std::string response = "role:";
-          response+=role;
-          if(role=="master"){
-            response=response+"\n"+"master_replid:"+master_replid+"\n";
-            response=response+"master_repl_offset:"+to_string(master_repl_offset)+"\n";
+          response += role;
+          if (role == "master")
+          {
+            response = response + "\n" + "master_replid:" + master_replid + "\n";
+            response = response + "master_repl_offset:" + to_string(master_repl_offset) + "\n";
           }
           response = encode(response);
           send(client_sock, response.c_str(), response.length(), 0);
@@ -108,6 +109,33 @@ void handleClient(int client_sock  )
     }
   }
   close(client_sock);
+}
+
+void handleMasterConnection()
+{
+  int master_fd = socket(AF_INET, SOCK_STREAM, 0);
+  if (master_fd < 0)
+  {
+    cerr << "Failed to create slave server socket\n";
+    return ;
+  }
+
+  struct sockadder_in master_server_addr;
+  master_server_addr.sin_family = AF_INET;
+  master_server_addr.sin_addr = inet_addr('127.0.0.1');
+  master_server_addr.sin_port = htons(master_port);
+
+  if (connect(master_fd, (struct sockaddr *)&master_server_addr, sizeof(master_server_addr)) < 0)
+  {
+    std::cerr << "Connection failed\n";
+    return;
+  }
+  const char *message = "*1\r\n$4\r\nping\r\n";
+  if (send(master_fd, message, strlen(message), 0) < 0)
+  {
+    std::cerr << "Send failed\n";
+    return ;
+  }
 }
 
 int main(int argc, char **argv)
@@ -132,12 +160,14 @@ int main(int argc, char **argv)
         return 1;
       }
     }
-    else if(arg == "--replicaof"){
-      if(i+2<argc)
+    else if (arg == "--replicaof")
+    {
+      if (i + 2 < argc)
       {
-        role="slave";
+        role = "slave";
         master_host = argv[++i];
         master_port = std::stoi(argv[++i]);
+        handleMasterConnection();
       }
       else
       {
@@ -170,7 +200,7 @@ int main(int argc, char **argv)
 
   if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) != 0)
   {
-    cerr << "Failed to bind to port "<<port<<"\n";
+    cerr << "Failed to bind to port " << port << "\n";
     return 1;
   }
 
