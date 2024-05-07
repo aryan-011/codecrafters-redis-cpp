@@ -142,13 +142,18 @@ void handleMasterConnection()
     std::cerr << "Connection failed\n";
     return;
   }
-
+  
+  char buffer[1024];
+  
   std::string message =  "*1\r\n$4\r\nping\r\n";
   if (send(master_fd, message.c_str(), message.length(), 0) < 0)
   {
     std::cerr << "send FAiled\n";
     return;
   }
+
+  int bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
+  cout << "Received: " << buffer << endl;
 
   message = "*3\r\n$8\r\nREPLCONF\r\n$14\r\nlistening-port\r\n$4\r\n6380\r\n";
   if (send(master_fd, message.c_str(), message.length(), 0) < 0)
@@ -157,12 +162,19 @@ void handleMasterConnection()
     return;
   }
 
+  int bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
+  cout << "Received: " << buffer << endl;
+
   message = "*3\r\n$8\r\nREPLCONF\r\n$4\r\ncapa\r\n$6\r\npsync2\r\n";
   if (send(master_fd, message.c_str(), message.length(), 0) < 0)
   {
     std::cerr << "send FAiled\n";
     return;
   }
+
+  int bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
+  cout << "Received: " << buffer << endl;
+
 }
 
 int main(int argc, char **argv)
