@@ -131,7 +131,7 @@ int main(int argc, char **argv)
       {
         role="slave";
         master_host = argv[++i];
-        mater_port = std::stoi(argv[++i]);
+        master_port = std::stoi(argv[++i]);
       }
       else
       {
