@@ -45,9 +45,9 @@ void handleClient(int client_sock){
             if(resp.size()>3){
               if(resp[3]=="PX"){
                 int expiry=stoi(resp[4]);
-                std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+                std::chrono::time_point<std::chrono::system_clock> strt = std::chrono::system_clock::now();
                 std::chrono::milliseconds duration(expiry);
-                std::chrono::time_point<std::chrono::system_clock> expiration_time = now + std::chrono::milliseconds(expiry);
+                std::chrono::time_point<std::chrono::system_clock> expiration_time = strt + std::chrono::milliseconds(expiry);
                 expiry_map[resp[1]]= expiration_time;
               }
             }
@@ -55,12 +55,12 @@ void handleClient(int client_sock){
           }
           else if (resp[0] == "GET") {
             string response = "";
-            std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+            std::chrono::time_point<std::chrono::system_clock> strt = std::chrono::system_clock::now();
             string key=resp[1];
             if(in_map.count(resp[1]) != 0){
               response=in_map[key];
             }
-            if(expiry_map.count(key)!=0 && expiry_map[key]<=now){
+            if(expiry_map.count(key)!=0 && expiry_map[key]<=strt){
               in_map.erase(in_map.find(key));
               expiry_map.erase(expiry_map.find(key));
               response="";
