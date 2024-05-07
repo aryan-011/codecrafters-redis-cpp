@@ -47,7 +47,8 @@ void handleClient(int client_sock){
                 int expiry=stoi(resp[4]);
                 std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
                 std::chrono::milliseconds duration(expiry);
-                expiry_map[resp[1]]= now + duration;
+                auto expiration_time = now + std::chrono::milliseconds(expiry);
+                expiry_map[resp[1]]= expiration_time;
               }
             }
             send(client_sock, response.c_str(), response.length(), 0);
@@ -57,10 +58,10 @@ void handleClient(int client_sock){
             std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
             string key=resp[1];
             if(expiry_map.count(key)!=0 && expiry_map[key]<=now){
-              in_map.erase(in_map.find(resp[1]));
-              expiry_map.erase(expiry_map.find(resp[1]));
+              in_map.erase(in_map.find(key));
+              expiry_map.erase(expiry_map.find(key));
             }
-            else if(in_map.count(resp[1]) != 0){
+            if(in_map.count(resp[1]) != 0){
               response=in_map[key];
             }
             response=encode(response);
