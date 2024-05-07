@@ -43,7 +43,7 @@ void handleClient(int client_sock){
             in_map[resp[1]]=resp[2];
             string response=encode("OK");
             if(resp.size()>3){
-              if(resp[3]=="PX"){
+              if(resp[3]=="PX" ||resp[3]=="px" || resp[3]=="pX" || resp[3]=="Px"){
                 int expiry=stoi(resp[4]);
                 std::chrono::time_point<std::chrono::high_resolution_clock> strt = std::chrono::system_clock::now();
                 std::chrono::milliseconds duration(expiry);
