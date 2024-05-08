@@ -41,3 +41,13 @@ std::string encode(std::string tmp) {
         return "$" + std::to_string(tmp.length()) + "\r\n" + tmp + "\r\n";
     }
 }
+
+std::string hexStringToBytes(const std::string& hex) {
+    std::string result;
+    for (size_t i = 0; i < hex.length(); i += 2) {
+        unsigned int byte = std::stoi(hex.substr(i, 2), nullptr, 16);
+        result.push_back(static_cast<char>(byte));
+    }
+
+    return result;
+}

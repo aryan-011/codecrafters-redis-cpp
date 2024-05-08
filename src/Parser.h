@@ -7,5 +7,6 @@
 char upper(char c);
 std::vector<std::string> parseResp(char *buffer);
 std::string encode(std::string tmp);
+std::string hexStringToBytes(const std::string& hex);
 
 #endif 
