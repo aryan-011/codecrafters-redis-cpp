@@ -232,12 +232,23 @@ int main(int argc, char **argv)
     }
     else if (arg == "--replicaof")
     {
-      if (i + 2 < argc)
+      if (i + 1 < argc)
       {
         role = "slave";
-        master_host = argv[++i];
-        master_port = std::stoi(argv[++i]);
-        handleMasterConnection();
+        std::stringstream replicaof(arg[++i]);
+        std::vector<std::string> t;
+        while (getline(replicaof, s, ' ')) {
+          t.push_back(s);
+        }
+        if(t.size()==2){
+          master_host = t[0];
+          master_port = std::stoi(t[1]);
+          handleMasterConnection();
+        }
+        else{
+          std::cerr << "Error: --replicaof requires 2 argument " << std::endl;
+          return 1;
+        }
       }
       else
       {
