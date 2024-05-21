@@ -81,7 +81,7 @@ void handleClient(int client_sock)
           }
         }
         else{
-          send(client_sock, "response".c_str(), "response".length(), 0);
+          send(client_sock, encode("response").c_str(), encode("response").length(), 0);
         }
       }
       else if (resp[0] == "GET")
