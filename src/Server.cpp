@@ -80,6 +80,9 @@ void handleClient(int client_sock)
             send(fd, buffer, strlen(buffer), 0);
           }
         }
+        else{
+          send(client_sock, "response".c_str(), "response".length(), 0);
+        }
       }
       else if (resp[0] == "GET")
       {
