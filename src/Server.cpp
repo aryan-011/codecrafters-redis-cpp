@@ -222,7 +222,7 @@ int main(int argc, char **argv)
     {
       if (i + 1 < argc)
       {
-        port = std::stoi(argv[++i]);
+        port = std::stoi(argv[i+1]);
       }
       else
       {
