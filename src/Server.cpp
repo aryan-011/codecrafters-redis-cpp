@@ -235,7 +235,8 @@ int main(int argc, char **argv)
       if (i + 1 < argc)
       {
         role = "slave";
-        std::stringstream replicaof(arg[++i]);
+        std::string st=arg[++i]; 
+        std::stringstream replicaof(st);
         std::vector<std::string> t;
         std::string s;
         while (getline(replicaof, s, ' ')) {
