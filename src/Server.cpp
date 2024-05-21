@@ -235,21 +235,20 @@ int main(int argc, char **argv)
       if (i + 1 < argc)
       {
         role = "slave";
-        std::string st=arg[++i]; 
+        std::string st = argv[i+1];
         std::stringstream replicaof(st);
         std::vector<std::string> t;
         std::string s;
-        while (getline(replicaof, s, ' ')) {
+        while (replicaof >> s) {
           t.push_back(s);
         }
-        if(t.size()==2){
-          master_host = t[0];
-          master_port = std::stoi(t[1]);
-          handleMasterConnection();
-        }
-        else{
-          std::cerr << "Error: --replicaof requires 2 argument " << std::endl;
-          return 1;
+        if (t.size() == 2) {
+            master_host = t[0];
+            master_port = std::stoi(t[1]);
+            handleMasterConnection();
+        } else {
+            std::cerr << "Error: --replicaof requires 2 arguments" << std::endl;
+            return 1;
         }
       }
       else
