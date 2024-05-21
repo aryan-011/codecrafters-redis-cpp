@@ -209,7 +209,7 @@ void handleMasterConnection()
 
   bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
   cout << "Received: " << buffer << endl;
-
+  handleClient(master_fd);
 }
 
 int main(int argc, char **argv)
