@@ -20,6 +20,7 @@ std::string master_replid = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
 int master_repl_offset = 0;
 std::string role = "master";
 std::string master_host = "";
+std::set<int> replica_sock;
 int master_port = -1;
 int port = 6379;
 
@@ -43,7 +44,7 @@ void handleClient(int client_sock)
     else
     {
       cout << "Received: " << buffer << endl;
-      // Sending pong
+      
       vector<string> resp = parseResp(buffer);
 
       if (resp[0] == "ECHO")
@@ -73,6 +74,12 @@ void handleClient(int client_sock)
           }
         }
         send(client_sock, response.c_str(), response.length(), 0);
+
+        if (role=="master"){
+          for(int fd:replica_sock){
+            send(fd, buffer, strlen(buffer), 0);
+          }
+        }
       }
       else if (resp[0] == "GET")
       {
@@ -125,6 +132,8 @@ void handleClient(int client_sock)
         std::string res = hexStringToBytes(rdb);
         response = "$"+to_string(res.length())+"\r\n"+res;
         send(client_sock, response.c_str(), response.length(), 0);
+
+        replica_sock.insert(client_sock);
       }
     }
   }
