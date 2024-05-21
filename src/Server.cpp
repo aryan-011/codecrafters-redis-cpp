@@ -210,9 +210,9 @@ void handleMasterConnection()
 
     bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
     cout << "Received: " << buffer << endl;
-  // handleClient(master_fd);
     std::string response(buffer, bytes_recvd);
     if(response.find("+FULLRESYNC")!= std::string::npos){
+      handleClient(master_fd);
       return;
     }
   }
