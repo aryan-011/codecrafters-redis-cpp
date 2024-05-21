@@ -73,9 +73,9 @@ void handleClient(int client_sock)
             expiry_map[resp[1]] = expiration_time;
           }
         }
-        send(client_sock, response.c_str(), response.length(), 0);
 
         if (role=="master"){
+          send(client_sock, response.c_str(), response.length(), 0);
           for(int fd:replica_sock){
             send(fd, buffer, strlen(buffer), 0);
           }
