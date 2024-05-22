@@ -211,7 +211,7 @@ void handleMasterConnection()
     bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
     cout << "Received: " << buffer << endl;
     std::string response(buffer, bytes_recvd);
-    std::thread t(handle_client, master_fd);
+    std::thread t(handleClient, master_fd);
     t.detach();
   }
 }
