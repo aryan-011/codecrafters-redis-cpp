@@ -121,8 +121,7 @@ void handleClient(int client_sock)
               else{
                 std::string response = encode("OK");
                 send(client_sock, response.c_str(), response.length(), 0);
-                if(replica_sock.empty() || replica_sock.back() != client_fd)
-                  replica_sock.insert(client_fd);
+                replica_sock.insert(client_sock);
               }
             }
             
