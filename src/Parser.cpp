@@ -49,9 +49,10 @@ std::vector<std::string> parseArray(const std::string &arr) {
 }
 
 
-std::vector<std::vector<std::string>> parseResp(const std::string& buffer) {
+std::vector<std::vector<std::string>> parseResp(const char* buffer) {
+    std::string str_buffer(buffer);
     std::vector<std::vector<std::string>> commands;
-    std::istringstream iss(buffer);
+    std::istringstream iss(str_buffer);
     std::string token;
     std::string remaining_data;
 
