@@ -64,7 +64,7 @@ std::vector<std::vector<std::string>> parseResp(char *buffer) {
                 }
                 i++;
             }
-            commands.push_back(parse_simple_string(simple_string));
+            commands.push_back(parseSimpleString(simple_string));
         } else if (raw_message[i] == '$') {
             std::string bulk_string;
             int cnt = 0;
@@ -76,7 +76,7 @@ std::vector<std::vector<std::string>> parseResp(char *buffer) {
                 }
                 i++;
             }
-            commands.push_back(parse_bulk_string(bulk_string));
+            commands.push_back(parseBulkString(bulk_string));
         } else if (raw_message[i] == '*') {
             std::string arr;
             while (i < raw_message.size()) {
@@ -91,7 +91,7 @@ std::vector<std::vector<std::string>> parseResp(char *buffer) {
                 arr.push_back(raw_message[i++]);
             }
             arr.push_back(raw_message[i]);
-            commands.push_back(parse_array(arr));
+            commands.push_back(parseArray(arr));
         }
         i++;
     }
@@ -109,32 +109,32 @@ std::vector<std::vector<std::string>> parseResp(char *buffer) {
 
 
 
-std::vector<std::string> parseResp(char *buffer) {
-    std::vector<std::string> tokens;
-    std::string res(buffer);
-    std::string delimiter = "\r\n";
-    std::string token;
-    size_t pos = res.find(delimiter);
-    while (pos != std::string::npos) {
-        token = res.substr(0, pos);
-        tokens.push_back(token);
-        res.erase(0, pos + 2);
-        pos = res.find(delimiter);
-    }
+// std::vector<std::string> parseResp(char *buffer) {
+//     std::vector<std::string> tokens;
+//     std::string res(buffer);
+//     std::string delimiter = "\r\n";
+//     std::string token;
+//     size_t pos = res.find(delimiter);
+//     while (pos != std::string::npos) {
+//         token = res.substr(0, pos);
+//         tokens.push_back(token);
+//         res.erase(0, pos + 2);
+//         pos = res.find(delimiter);
+//     }
 
-    if (!res.empty()) {
-        tokens.push_back(res);
-    }
-    std::string &cmnd = tokens[0];
-    std::transform(cmnd.begin(), cmnd.end(), cmnd.begin(), upper);
+//     if (!res.empty()) {
+//         tokens.push_back(res);
+//     }
+//     std::string &cmnd = tokens[0];
+//     std::transform(cmnd.begin(), cmnd.end(), cmnd.begin(), upper);
 
-    tokens.erase(
-        std::remove_if(tokens.begin(), tokens.end(), startsWithSpecialCharacter ),
-        tokens.end()
-    );
+//     tokens.erase(
+//         std::remove_if(tokens.begin(), tokens.end(), startsWithSpecialCharacter ),
+//         tokens.end()
+//     );
 
-    return tokens;
-}
+//     return tokens;
+// }
 
 std::string encode(std::string tmp) {
     if (tmp.empty()) {
