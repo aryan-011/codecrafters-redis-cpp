@@ -54,7 +54,7 @@ void handleClient(int client_sock)
         }
 
         std::string command = command_vec[0];
-        std::transform(command.begin(), command.end(), command.begin(), ::toupper); /
+        std::transform(command.begin(), command.end(), command.begin(), ::toupper); 
 
         if (command == "ECHO" && command_vec.size() > 1) {
             std::string response = encode(command_vec[1]);
