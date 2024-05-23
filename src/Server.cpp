@@ -41,104 +41,94 @@ void handleClient(int client_sock)
       cout << "Client disconnected\n";
       close(client_sock);
     }
-    else
-    {
-      cout << "Received: " << buffer << endl;
-      
-      vector<string> resp = parseResp(buffer);
+    else {
+    std::cout << "Received: " << buffer << std::endl;
 
-      if (resp[0] == "ECHO")
-      {
-        string response = encode(resp[1]);
-        send(client_sock, response.c_str(), response.length(), 0);
-      }
-      else if (resp[0] == "PING")
-      {
-        string response = "+PONG\r\n";
-        send(client_sock, response.c_str(), response.length(), 0);
-      }
-      else if (resp[0] == "SET")
-      {
-        in_map[resp[1]] = resp[2];
-        string response = encode("OK");
-        if (resp.size() > 3)
-        {
-          std::transform(resp[3].begin(), resp[3].end(), resp[3].begin(), upper);
-          if (resp[3] == "PX")
-          {
-            int expiry = stoi(resp[4]);
-            std::chrono::time_point<std::chrono::high_resolution_clock> strt = std::chrono::system_clock::now();
-            std::chrono::milliseconds duration(expiry);
-            std::chrono::time_point<std::chrono::high_resolution_clock> expiration_time = strt + std::chrono::milliseconds(expiry);
-            expiry_map[resp[1]] = expiration_time;
-          }
+    // Parse the RESP message
+    std::vector<std::vector<std::string>> resp = parseResp(buffer);
+
+    // Loop through each parsed command
+    for (const auto& command_vec : resp) {
+        if (command_vec.empty()) {
+            continue; // Skip empty commands
         }
 
-        if (role=="master"){
-          send(client_sock, response.c_str(), response.length(), 0);
-          for(int fd:replica_sock){
-            send(fd, buffer, strlen(buffer), 0);
-          }
-        }
-        else{
-          send(client_sock, encode("response").c_str(), encode("response").length(), 0);
-        }
-      }
-      else if (resp[0] == "GET")
-      {
-        string response = "";
-        std::chrono::time_point<std::chrono::high_resolution_clock> strt = std::chrono::high_resolution_clock::now();
-        string key = resp[1];
-        if (expiry_map.count(key) != 0 && expiry_map[key] <= strt)
-        {
-          in_map.erase(in_map.find(key));
-          expiry_map.erase(expiry_map.find(key));
-        }
-        else if (in_map.count(resp[1]) != 0)
-        {
-          response = in_map[key];
-        }
-        response = encode(response);
-        send(client_sock, response.c_str(), response.length(), 0);
-      }
-      else if (resp[0] == "INFO")
-      {
-        std::transform(resp[1].begin(), resp[1].end(), resp[1].begin(), upper);
-        if (resp[1] == "REPLICATION")
-        {
-          std::string response = "role:";
-          response += role;
-          if (role == "master")
-          {
-            response = response + "\n" + "master_replid:" + master_replid + "\n";
-            response = response + "master_repl_offset:" + to_string(master_repl_offset) + "\n";
-          }
-          response = encode(response);
-          send(client_sock, response.c_str(), response.length(), 0);
-        }
-      }
-      else if (resp[0] == "REPLCONF")
-      {
-        std::string response = "OK";
-        response=encode(response);
-        send(client_sock, response.c_str(), response.length(), 0);
-      }
-      else if(resp[0]=="PSYNC"){
-        std::string response="+FULLRESYNC ";
-        response+=master_replid;
-        response=response+" "+to_string(master_repl_offset);
-        response+="\r\n";
-        // response=encode(response);
-        send(client_sock, response.c_str(), response.length(), 0);
+        std::string command = command_vec[0];
+        std::transform(command.begin(), command.end(), command.begin(), ::toupper); /
 
-        std::string rdb = "524544495330303131fa0972656469732d76657205372e322e30fa0a72656469732d62697473c040fa056374696d65c26d08bc65fa08757365642d6d656dc2b0c41000fa08616f662d62617365c000fff06e3bfec0ff5aa2";
-        std::string res = hexStringToBytes(rdb);
-        response = "$"+to_string(res.length())+"\r\n"+res;
-        send(client_sock, response.c_str(), response.length(), 0);
+        if (command == "ECHO" && command_vec.size() > 1) {
+            std::string response = encode(command_vec[1]);
+            send(client_sock, response.c_str(), response.length(), 0);
+        } else if (command == "PING") {
+            std::string response = "+PONG\r\n";
+            send(client_sock, response.c_str(), response.length(), 0);
+        } else if (command == "SET" && command_vec.size() > 2) {
+            in_map[command_vec[1]] = command_vec[2];
+            std::string response = encode("OK");
 
-        replica_sock.insert(client_sock);
-      }
+            if (command_vec.size() > 3) {
+                std::string option = command_vec[3];
+                std::transform(option.begin(), option.end(), option.begin(), ::toupper);
+                if (option == "PX" && command_vec.size() > 4) {
+                    int expiry = std::stoi(command_vec[4]);
+                    auto now = std::chrono::system_clock::now();
+                    auto expiration_time = now + std::chrono::milliseconds(expiry);
+                    expiry_map[command_vec[1]] = expiration_time;
+                }
+            }
+
+            if (role == "master") {
+                send(client_sock, response.c_str(), response.length(), 0);
+                for (int fd : replica_sock) {
+                    send(fd, buffer, strlen(buffer), 0);
+                }
+            } else {
+                send(client_sock, encode("response").c_str(), encode("response").length(), 0);
+            }
+        } else if (command == "GET" && command_vec.size() > 1) {
+            std::string response;
+            auto now = std::chrono::high_resolution_clock::now();
+            std::string key = command_vec[1];
+
+            if (expiry_map.count(key) != 0 && expiry_map[key] <= now) {
+                in_map.erase(key);
+                expiry_map.erase(key);
+            } else if (in_map.count(key) != 0) {
+                response = in_map[key];
+            }
+
+            response = encode(response);
+            send(client_sock, response.c_str(), response.length(), 0);
+        } else if (command == "INFO" && command_vec.size() > 1) {
+            std::string option = command_vec[1];
+            std::transform(option.begin(), option.end(), option.begin(), ::toupper);
+
+            if (option == "REPLICATION") {
+                std::string response = "role:" + role;
+                if (role == "master") {
+                    response += "\nmaster_replid:" + master_replid + "\n";
+                    response += "master_repl_offset:" + std::to_string(master_repl_offset) + "\n";
+                }
+                response = encode(response);
+                send(client_sock, response.c_str(), response.length(), 0);
+            }
+        } else if (command == "REPLCONF") {
+            std::string response = encode("OK");
+            send(client_sock, response.c_str(), response.length(), 0);
+        } else if (command == "PSYNC") {
+            std::string response = "+FULLRESYNC " + master_replid + " " + std::to_string(master_repl_offset) + "\r\n";
+            send(client_sock, response.c_str(), response.length(), 0);
+
+            std::string rdb = "524544495330303131fa0972656469732d76657205372e322e30fa0a72656469732d62697473c040fa056374696d65c26d08bc65fa08757365642d6d656dc2b0c41000fa08616f662d62617365c000fff06e3bfec0ff5aa2";
+            std::string res = hexStringToBytes(rdb);
+            response = "$" + std::to_string(res.length()) + "\r\n" + res;
+            send(client_sock, response.c_str(), response.length(), 0);
+
+            replica_sock.insert(client_sock);
+        }
     }
+}
+
   }
   close(client_sock);
 }

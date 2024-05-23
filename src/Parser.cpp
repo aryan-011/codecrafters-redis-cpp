@@ -1,12 +1,114 @@
 #include "Parser.h"
 #include <bits/stdc++.h>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <sstream>
+
+const std::string null_bulk_string = "$-1\r\n";
 
 char upper(char c) {
     return toupper(c);
 }
-bool startsWithSpecialCharacter(std::string& str) {
-    return !str.empty() && (str[0] == '*' || str[0] == '$');
+
+
+bool startsWithSpecialCharacter(const std::string &str) {
+    return str.empty() || str[0] == '+' || str[0] == '$' || str[0] == '*' || str[0] == ':';
 }
+
+std::vector<std::string> parseSimpleString(const std::string &simple_string) {
+    return {simple_string.substr(1, simple_string.size() - 3)};
+}
+
+std::vector<std::string> parseBulkString(const std::string &bulk_string) {
+    // Format: $<length>\r\n<data>\r\n
+    size_t start = bulk_string.find("\r\n");
+    size_t end = bulk_string.find("\r\n", start + 2);
+    return {bulk_string.substr(start + 2, end - start - 2)};
+}
+
+std::vector<std::string> parseArray(const std::string &arr) {
+    std::vector<std::string> elements;
+    size_t start = arr.find("\r\n") + 2;
+    std::string remaining = arr.substr(start);
+
+    while (!remaining.empty()) {
+        if (remaining[0] == '$') {
+            size_t end = remaining.find("\r\n", 1);
+            int length = std::stoi(remaining.substr(1, end - 1));
+            start = end + 2;
+            end = start + length;
+            elements.push_back(remaining.substr(start, length));
+            remaining = remaining.substr(end + 2);
+        } else {
+            break;
+        }
+    }
+    return elements;
+}
+
+std::vector<std::vector<std::string>> parseResp(char *buffer) {
+    std::vector<std::vector<std::string>> commands;
+    std::string raw_message(buffer);
+    int i = 0;
+
+    while (i < raw_message.size()) {
+        if (raw_message[i] == '+') {
+            std::string simple_string;
+            while (i < raw_message.size()) {
+                simple_string.push_back(raw_message[i]);
+                if (raw_message.substr(i, 2) == "\r\n") {
+                    simple_string.push_back(raw_message[++i]);
+                    break;
+                }
+                i++;
+            }
+            commands.push_back(parse_simple_string(simple_string));
+        } else if (raw_message[i] == '$') {
+            std::string bulk_string;
+            int cnt = 0;
+            while (i < raw_message.size()) {
+                bulk_string.push_back(raw_message[i]);
+                if (raw_message.substr(i, 2) == "\r\n") {
+                    bulk_string.push_back(raw_message[++i]);
+                    if (++cnt == 2) break;
+                }
+                i++;
+            }
+            commands.push_back(parse_bulk_string(bulk_string));
+        } else if (raw_message[i] == '*') {
+            std::string arr;
+            while (i < raw_message.size()) {
+                if (raw_message.substr(i, 2) == "\r\n") break;
+                arr.push_back(raw_message[i++]);
+            }
+            int num_elements = std::stoi(arr.substr(1)) * 2;
+            arr.push_back(raw_message[i++]);
+            arr.push_back(raw_message[i++]);
+            while (i < raw_message.size() && num_elements) {
+                if (raw_message.substr(i, 2) == "\r\n") num_elements--;
+                arr.push_back(raw_message[i++]);
+            }
+            arr.push_back(raw_message[i]);
+            commands.push_back(parse_array(arr));
+        }
+        i++;
+    }
+
+    std::cout << "Parsed " << commands.size() << " commands" << std::endl;
+    for (int i = 0; i < commands.size(); i++) {
+        std::cout << "Command " << i << ", has size of " << commands[i].size() << ": ";
+        for (int j = 0; j < commands[i].size(); j++) {
+            std::cout << commands[i][j] << ' ';
+        }
+        std::cout << std::endl;
+    }
+    return commands;
+}
+
+
+
 std::vector<std::string> parseResp(char *buffer) {
     std::vector<std::string> tokens;
     std::string res(buffer);
@@ -51,3 +153,4 @@ std::string hexStringToBytes(const std::string& hex) {
 
     return result;
 }
+
