@@ -48,54 +48,55 @@ std::vector<std::string> parseArray(const std::string &arr) {
     return elements;
 }
 
-
-std::vector<std::vector<std::string>> parseResp(char* buffer) {
-    std::string str_buffer(buffer);
+std::vector<std::vector<std::string>> parseResp(char *buffer) {
     std::vector<std::vector<std::string>> commands;
-    std::istringstream iss(str_buffer);
-    std::string token;
-    std::string remaining_data;
+    std::string raw_message(buffer);
+    int i = 0;
 
-    while (std::getline(iss, token, '\n')) {
-        remaining_data += token + "\n";
-
-        while (startsWithSpecialCharacter(remaining_data)) {
-            try {
-                if (remaining_data[0] == '+') {
-                    commands.push_back(parseSimpleString(remaining_data));
-                    remaining_data = remaining_data.substr(commands.back().front().size() + 3);
-                } else if (remaining_data[0] == '$') {
-                    auto bulk_strings = parseBulkString(remaining_data);
-                    commands.push_back(bulk_strings);
-                    remaining_data = remaining_data.substr(bulk_strings.front().size() + remaining_data.find("\r\n", 1) + 4);
-                } else if (remaining_data[0] == '*') {
-                    size_t end_pos = remaining_data.find("\r\n");
-                    std::string arr_header = remaining_data.substr(0, end_pos + 2);
-                    remaining_data = remaining_data.substr(end_pos + 2);
-                    std::string arr = arr_header;
-
-                    while (!remaining_data.empty()) {
-                        end_pos = remaining_data.find("\r\n");
-                        if (end_pos == std::string::npos) {
-                            arr += remaining_data;
-                            remaining_data.clear();
-                            break;
-                        }
-                        arr += remaining_data.substr(0, end_pos + 2);
-                        remaining_data = remaining_data.substr(end_pos + 2);
-                    }
-
-                    commands.push_back(parseArray(arr));
+    while (i < raw_message.size()) {
+        if (raw_message[i] == '+') {
+            std::string simple_string;
+            while (i < raw_message.size()) {
+                simple_string.push_back(raw_message[i]);
+                if (raw_message.substr(i, 2) == "\r\n") {
+                    simple_string.push_back(raw_message[++i]);
+                    break;
                 }
-            } catch (const std::exception& e) {
-                std::cerr << "Error parsing response: " << e.what() << std::endl;
-                commands.clear();
-                return commands;
+                i++;
             }
+            commands.push_back(parseSimpleString(simple_string));
+        } else if (raw_message[i] == '$') {
+            std::string bulk_string;
+            int cnt = 0;
+            while (i < raw_message.size()) {
+                bulk_string.push_back(raw_message[i]);
+                if (raw_message.substr(i, 2) == "\r\n") {
+                    bulk_string.push_back(raw_message[++i]);
+                    if (++cnt == 2) break;
+                }
+                i++;
+            }
+            commands.push_back(parseBulkString(bulk_string));
+        } else if (raw_message[i] == '*') {
+            std::string arr;
+            while (i < raw_message.size()) {
+                if (raw_message.substr(i, 2) == "\r\n") break;
+                arr.push_back(raw_message[i++]);
+            }
+            int num_elements = std::stoi(arr.substr(1)) * 2;
+            arr.push_back(raw_message[i++]);
+            arr.push_back(raw_message[i++]);
+            while (i < raw_message.size() && num_elements) {
+                if (raw_message.substr(i, 2) == "\r\n") num_elements--;
+                arr.push_back(raw_message[i++]);
+            }
+            arr.push_back(raw_message[i]);
+            commands.push_back(parseArray(arr));
         }
+        i++;
     }
 
-    std::cout << "Parsed " << commands.size() << " commands" << std::endl;
+    // std::cout << "Parsed " << commands.size() << " commands" << std::endl;
     for (int i = 0; i < commands.size(); i++) {
         std::cout << "Command " << i << ", has size of " << commands[i].size() << ": ";
         for (int j = 0; j < commands[i].size(); j++) {
@@ -103,7 +104,6 @@ std::vector<std::vector<std::string>> parseResp(char* buffer) {
         }
         std::cout << std::endl;
     }
-
     return commands;
 }
 

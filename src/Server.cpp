@@ -117,8 +117,6 @@ void handleClient(int client_sock)
             }
         } else if (command == "REPLCONF") {
             if(command_vec.size()>=3){
-              std::string response = "*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n";
-              send(client_sock, response.c_str(), response.length(), 0);
               if(role!="master" && handshake_complete){
                 std::string response = "*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n";
                 send(client_sock, response.c_str(), response.length(), 0);
