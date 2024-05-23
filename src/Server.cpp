@@ -43,7 +43,7 @@ void handleClient(int client_sock)
       close(client_sock);
     }
     else {
-    std::cout << "Received: " << buffer << std::endl;
+    // std::cout << "Received: " << buffer << std::endl;
 
     // Parse the RESP message
     std::vector<std::vector<std::string>> resp = parseResp(buffer);
@@ -56,7 +56,9 @@ void handleClient(int client_sock)
 
         std::string command = command_vec[0];
         std::transform(command.begin(), command.end(), command.begin(), ::toupper); 
-        cout<<command_vec[0];
+        for(auto& t:command_vec){
+        std::cout<<"recvd"<<t<<std::endl;
+        }
         if (command == "ECHO" && command_vec.size() > 1) {
             std::string response = encode(command_vec[1]);
             send(client_sock, response.c_str(), response.length(), 0);
