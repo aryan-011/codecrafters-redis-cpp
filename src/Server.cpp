@@ -113,7 +113,7 @@ void handleClient(int client_sock)
                 send(client_sock, response.c_str(), response.length(), 0);
             }
         } else if (command == "REPLCONF") {
-            if(command_vec.size>=3){
+            if(command_vec.size()>=3){
               string cmnd=command_vec[1];
               std::transform(cmnd.begin(), cmnd.end(), cmnd.begin(), ::toupper);
               if(cmnd=="GETACK" && command_vec[2]=="*"){
