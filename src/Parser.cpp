@@ -61,10 +61,10 @@ std::vector<std::vector<std::string>> parseResp(const std::string& buffer) {
         while (startsWithSpecialCharacter(remaining_data)) {
             try {
                 if (remaining_data[0] == '+') {
-                    commands.push_back(parse_simple_string(remaining_data));
+                    commands.push_back(parseSimpleString(remaining_data));
                     remaining_data = remaining_data.substr(commands.back().front().size() + 3);
                 } else if (remaining_data[0] == '$') {
-                    auto bulk_strings = parse_bulk_string(remaining_data);
+                    auto bulk_strings = parseBulkString(remaining_data);
                     commands.push_back(bulk_strings);
                     remaining_data = remaining_data.substr(bulk_strings.front().size() + remaining_data.find("\r\n", 1) + 4);
                 } else if (remaining_data[0] == '*') {
@@ -84,7 +84,7 @@ std::vector<std::vector<std::string>> parseResp(const std::string& buffer) {
                         remaining_data = remaining_data.substr(end_pos + 2);
                     }
 
-                    commands.push_back(parse_array(arr));
+                    commands.push_back(parseArray(arr));
                 }
             } catch (const std::exception& e) {
                 std::cerr << "Error parsing response: " << e.what() << std::endl;
