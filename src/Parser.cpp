@@ -96,7 +96,7 @@ std::vector<std::vector<std::string>> parseResp(char *buffer) {
         i++;
     }
 
-    std::cout << "Parsed " << commands.size() << " commands" << std::endl;
+    // std::cout << "Parsed " << commands.size() << " commands" << std::endl;
     for (int i = 0; i < commands.size(); i++) {
         std::cout << "Command " << i << ", has size of " << commands[i].size() << ": ";
         for (int j = 0; j < commands[i].size(); j++) {

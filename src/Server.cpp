@@ -116,7 +116,7 @@ void handleClient(int client_sock)
             if(command_vec.size()>=3){
               string cmnd=command_vec[1];
               std::transform(cmnd.begin(), cmnd.end(), cmnd.begin(), ::toupper);
-              if(cmnd=="GETACK" && command_vec[2]=="*"){
+              if(cmnd=="GETACK" ){
                 std::string response = "*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n";
                 send(client_sock, response.c_str(), response.length(), 0);
               }
