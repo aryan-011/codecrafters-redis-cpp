@@ -49,7 +49,7 @@ std::vector<std::string> parseArray(const std::string &arr) {
 }
 
 
-std::vector<std::vector<std::string>> parseResp(const char* buffer) {
+std::vector<std::vector<std::string>> parseResp(char* buffer) {
     std::string str_buffer(buffer);
     std::vector<std::vector<std::string>> commands;
     std::istringstream iss(str_buffer);
