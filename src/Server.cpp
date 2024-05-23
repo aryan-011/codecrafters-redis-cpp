@@ -34,7 +34,7 @@ void handleClient(int client_sock)
     if (bytes_recvd < 0)
     {
       // cerr << "Error in receiving data\n";
-      close(client_sock);
+      // close(client_sock);
     }
     else if (bytes_recvd == 0)
     {
@@ -134,11 +134,9 @@ void handleClient(int client_sock)
             send(client_sock, response.c_str(), response.length(), 0);
 
             replica_sock.insert(client_sock);
-        }
-    }
-    close(client_sock);
-}
-
+          }
+      }
+    } 
   }
   close(client_sock);
 }
