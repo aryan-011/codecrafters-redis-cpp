@@ -55,6 +55,9 @@ void handleClient(int client_sock)
         }
 
         std::string command = command_vec[0];
+        std::string keyword = command[0];
+        // Ignores RDB for now
+        if (keyword[0] == '$') continue;
         std::transform(command.begin(), command.end(), command.begin(), ::toupper); 
         for(auto& t:command_vec){
         std::cout<<"recvd"<<t<<std::endl;
