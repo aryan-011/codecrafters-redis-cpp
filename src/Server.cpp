@@ -23,6 +23,7 @@ std::string master_host = "";
 std::set<int> replica_sock;
 int master_port = -1;
 int port = 6379;
+bool handshake_complete  = false;
 
 void handleClient(int client_sock)
 {
@@ -114,7 +115,7 @@ void handleClient(int client_sock)
             }
         } else if (command == "REPLCONF") {
             if(command_vec.size()>=3){
-              if(role!="master"){
+              if(role!="master" && handshake_complete){
                 std::string response = "*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n";
                 send(client_sock, response.c_str(), response.length(), 0);
               }
@@ -209,6 +210,8 @@ void handleMasterConnection()
 
     bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
     cout << "Received: " << buffer << endl;
+
+    handshake_complete = true;
     std::string response(buffer, bytes_recvd);
     std::thread t(handleClient, master_fd);
     t.detach();
