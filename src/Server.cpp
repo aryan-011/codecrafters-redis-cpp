@@ -33,7 +33,7 @@ void handleClient(int client_sock)
 
     if (bytes_recvd < 0)
     {
-      cerr << "Error in receiving data\n";
+      // cerr << "Error in receiving data\n";
       close(client_sock);
     }
     else if (bytes_recvd == 0)
