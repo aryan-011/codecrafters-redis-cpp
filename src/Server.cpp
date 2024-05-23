@@ -138,6 +138,7 @@ void handleClient(int client_sock)
             replica_sock.insert(client_sock);
         }
     }
+    close(client_sock);
 }
 
   }
