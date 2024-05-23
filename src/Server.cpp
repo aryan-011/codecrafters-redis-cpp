@@ -215,7 +215,7 @@ void handleMasterConnection()
 
     bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
     cout << "Received: " << buffer << endl;
-
+    memset(buffer,0,sizeof(buffer));
     handshake_complete = true;
     std::string response(buffer, bytes_recvd);
     std::thread t(handleClient, master_fd);
