@@ -55,7 +55,7 @@ void handleClient(int client_sock)
         }
 
         std::string command = command_vec[0];
-        std::string keyword = command[0];
+        std::string keyword = command_vec[0];
         // Ignores RDB for now
         if (keyword[0] == '$') continue;
         std::transform(command.begin(), command.end(), command.begin(), ::toupper); 
