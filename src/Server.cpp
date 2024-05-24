@@ -26,7 +26,7 @@ int port = 6379;
 bool handshake_complete  = false;
 // CommandReader commandReader;
 
-void handleClient(int client_sock,CommandReader& commandReader)
+void handleClient(int client_sock)
 {
   if(role!="master") cout << "Slve Here" << endl;
   cout << "Here" <<endl;
@@ -224,16 +224,16 @@ void handleMasterConnection()
       return;
     }
 
-    bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
-    cout << "Received: " << buffer <<"end" <<endl;
-    CommandReader commandReader;
-    commandReader.pushContent(buffer, sizeof(buffer) - 1);
+    // bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
+    // cout << "Received: " << buffer <<"end" <<endl;
+    // CommandReader commandReader;
+    // commandReader.pushContent(buffer, sizeof(buffer) - 1);
 
     // memset(buffer,0,sizeof(buffer));
     handshake_complete = true;
 
     // std::string response(buffer, bytes_recvd);
-    std::thread t(handleClient, master_fd,std::ref(commandReader));
+    std::thread t(handleClient, master_fd);
     t.detach();
   }
 }
@@ -339,7 +339,7 @@ int main(int argc, char **argv)
 
     cout << "Client connected\n";
 
-    threads.emplace_back(handleClient, client_sock,std::ref(commandReader));
+    threads.emplace_back(handleClient, client_sock);
   }
 
   for (auto &it : threads)
