@@ -29,6 +29,7 @@ bool handshake_complete  = false;
 void handleClient(int client_sock,CommandReader& commandReader)
 {
   if(role!="master") cout << "Slve Here" << endl;
+  cout << "Here" <<endl;
   while (true)
   {
     if(role!="master") cout << "Slve Here2" << endl;
