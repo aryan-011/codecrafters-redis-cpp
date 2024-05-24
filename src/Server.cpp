@@ -46,10 +46,12 @@ void handleClient(int client_sock)
     // std::cout << "Received: " << buffer << std::endl;
 
     // Parse the RESP message
-    std::vector<std::vector<std::string>> resp = parseResp(buffer);
+    CommandReader commandReader;
+    commandReader.pushContent(buffer, sizeof(buffer) - 1);
 
     // Loop through each parsed command
-    for (const auto& command_vec : resp) {
+    while (commandReader.isCommandComplete()) {
+        std::vector<std::string> command_vec = commandReader.getCurrentCommand();
         if (command_vec.empty()) {
             continue; // Skip empty commands
         }
@@ -58,10 +60,12 @@ void handleClient(int client_sock)
         std::string keyword = command_vec[0];
         // Ignores RDB for now
         if (keyword[0] == '$') continue;
+
         std::transform(command.begin(), command.end(), command.begin(), ::toupper); 
         for(auto& t:command_vec){
         std::cout<<"recvd"<<t<<std::endl;
         }
+        
         if (command == "ECHO" && command_vec.size() > 1) {
             std::string response = encode(command_vec[1]);
             send(client_sock, response.c_str(), response.length(), 0);
