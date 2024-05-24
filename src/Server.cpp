@@ -184,7 +184,7 @@ void handleMasterConnection()
       return;
     }
 
-    char buffer[1024];
+    char buffer[2024];
     
     std::string message =  "*1\r\n$4\r\nping\r\n";
     if (send(master_fd, message.c_str(), message.length(), 0) < 0)
