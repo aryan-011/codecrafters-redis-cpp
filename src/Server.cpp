@@ -24,9 +24,9 @@ std::set<int> replica_sock;
 int master_port = -1;
 int port = 6379;
 bool handshake_complete  = false;
-CommandReader commandReader;
+// CommandReader commandReader;
 
-void handleClient(int client_sock)
+void handleClient(int client_sock,CommandReader& commandReader)
 {
   if(role!="master") cout << "Slve Here" << endl;
   while (true)
@@ -230,7 +230,7 @@ void handleMasterConnection()
     memset(buffer,0,sizeof(buffer));
     handshake_complete = true;
     std::string response(buffer, bytes_recvd);
-    std::thread t(handleClient, master_fd);
+    std::thread t(handleClient, master_fd,std::ref(commandReader));
     t.detach();
   }
 }
@@ -327,7 +327,7 @@ int main(int argc, char **argv)
   cout << "Waiting for a client to connect...\n";
   while (1)
   {
-
+    CommandReader commandReader;
     int client_sock = accept(server_fd, (struct sockaddr *)&client_addr, (socklen_t *)&client_addr_len);
     if (client_sock < 0)
     {
@@ -336,7 +336,7 @@ int main(int argc, char **argv)
 
     cout << "Client connected\n";
 
-    threads.emplace_back(handleClient, client_sock);
+    threads.emplace_back(handleClient, client_sock,std::ref(commandReader));
   }
 
   for (auto &it : threads)
