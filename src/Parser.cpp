@@ -98,9 +98,8 @@ std::vector<std::string> CommandReader::readCommand() {
 
     if (rawBuffer[0] == '+') {
         auto end = std::find(rawBuffer.begin(), rawBuffer.end(), '\n');
-        if (end == rawBuffer.end()) {
+        if (end == rawBuffer.end()) 
             return {};
-        }
 
         std::string simpleStr(rawBuffer.begin(), end + 1);
         rawBuffer.erase(rawBuffer.begin(), end + 1);
@@ -108,7 +107,7 @@ std::vector<std::string> CommandReader::readCommand() {
     }
     else if (rawBuffer[0] == '$') {
         auto start = std::find(rawBuffer.begin(), rawBuffer.end(), '\n');
-        if (start == rawBuffer.end()) {
+        if (start == rawBuffer.end()) 
             return {};
 
         auto end = std::find(start + 1, rawBuffer.end(), '\n');
@@ -122,7 +121,7 @@ std::vector<std::string> CommandReader::readCommand() {
     }
     else if (rawBuffer[0] == '*') {
         auto start = std::find(rawBuffer.begin(), rawBuffer.end(), '\n');
-        if (start == rawBuffer.end()) {
+        if (start == rawBuffer.end()) 
             return {};
 
         std::string arrStr(rawBuffer.begin(), start + 1);
@@ -133,15 +132,14 @@ std::vector<std::string> CommandReader::readCommand() {
 
         while (numElems && !rawBuffer.empty()) {
             auto end = std::find(rawBuffer.begin(), rawBuffer.end(), '\n');
-            if (end >= rawBuffer.end()) {
+            if (end >= rawBuffer.end()) 
                 return {};
 
             arrStr += std::string(rawBuffer.begin(), end + 1);
             rawBuffer.erase(rawBuffer.begin(), end + 1);
             numElems--;
         }
-
-        return parseArray(arrStr);
+            return parseArray(arrStr);
     }
     return {};
 }
