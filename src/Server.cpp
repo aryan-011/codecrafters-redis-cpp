@@ -238,7 +238,7 @@ void handleMasterConnection()
     }
 
     bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
-    std::string escaped_string = escapeCharArray(buffer, sizeof(buffer))
+    std::string escaped_string = escapeCharArray(buffer, sizeof(buffer));
     cout << "Received: " << escaped_string << endl;
     memset(buffer,0,sizeof(buffer));
     handshake_complete = true;
