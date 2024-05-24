@@ -227,8 +227,10 @@ void handleMasterConnection()
     cout << "Received: " << buffer <<"end" <<endl;
     CommandReader commandReader;
     commandReader.pushContent(buffer, sizeof(buffer) - 1);
-    memset(buffer,0,sizeof(buffer));
+
+    // memset(buffer,0,sizeof(buffer));
     handshake_complete = true;
+
     std::string response(buffer, bytes_recvd);
     std::thread t(handleClient, master_fd,std::ref(commandReader));
     t.detach();
