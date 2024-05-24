@@ -24,13 +24,14 @@ std::set<int> replica_sock;
 int master_port = -1;
 int port = 6379;
 bool handshake_complete  = false;
+CommandReader commandReader;
 
 void handleClient(int client_sock)
 {
   if(role!="master") cout << "Slve Here" << endl;
   while (true)
   {
-    // if(role!="master") cout << "Slve Here2" << endl;
+    if(role!="master") cout << "Slve Here2" << endl;
     char buffer[1024];
     int bytes_recvd = recv(client_sock, buffer, sizeof(buffer), 0);
 
@@ -49,7 +50,6 @@ void handleClient(int client_sock)
 
     // Parse the RESP message
     cout<<"rcvd"<<buffer<<endl;
-    CommandReader commandReader;
     commandReader.pushContent(buffer, sizeof(buffer) - 1);
 
     // Loop through each parsed command
@@ -214,7 +214,7 @@ void handleMasterConnection()
     }
 
     bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
-    cout << "Received: " << buffer << endl;
+    // cout << "Received: " << buffer << endl;
 
     message = "*3\r\n$5\r\nPSYNC\r\n$1\r\n?\r\n$2\r\n-1\r\n";
     if (send(master_fd, message.c_str(), message.length(), 0) < 0)
@@ -224,8 +224,8 @@ void handleMasterConnection()
     }
 
     bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
-    cout << "Received: " << buffer << endl;
-    CommandReader commandReader;
+    // cout << "Received: " << buffer << endl;
+    // CommandReader commandReader;
     commandReader.pushContent(buffer, sizeof(buffer) - 1);
     memset(buffer,0,sizeof(buffer));
     handshake_complete = true;
