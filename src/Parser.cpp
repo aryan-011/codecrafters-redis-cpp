@@ -139,7 +139,7 @@ std::vector<std::string> CommandReader::readCommand() {
         // std::cout<<"STring"<<R"(arrStr)"<<std::endl;
             rawBuffer.erase(rawBuffer.begin(), end + 1);
             numElems--;
-            elements.push_back(arrStr);
+            // elements.push_back(arrStr);
         }
             return parseArray(arrStr);
     }
