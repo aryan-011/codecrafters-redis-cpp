@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <deque>
 
 char upper(char c);
 std::vector<std::vector<std::string>> parseResp(char *buffer);
