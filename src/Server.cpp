@@ -30,7 +30,7 @@ void handleClient(int client_sock)
   if(role!="master") cout << "Slve Here" << endl;
   while (true)
   {
-    if(role!="master") cout << "Slve Here2" << endl;
+    // if(role!="master") cout << "Slve Here2" << endl;
     char buffer[1024];
     int bytes_recvd = recv(client_sock, buffer, sizeof(buffer), 0);
 
@@ -48,6 +48,7 @@ void handleClient(int client_sock)
     // std::cout << "Received: " << buffer << std::endl;
 
     // Parse the RESP message
+    cout<<"rcvd"<<buffer<<endl
     CommandReader commandReader;
     commandReader.pushContent(buffer, sizeof(buffer) - 1);
 
