@@ -27,8 +27,10 @@ bool handshake_complete  = false;
 
 void handleClient(int client_sock)
 {
+  if(role!="master") cout << "Slve Here" << endl;
   while (true)
   {
+    if(role!="master") cout << "Slve Here2" << endl;
     char buffer[1024];
     int bytes_recvd = recv(client_sock, buffer, sizeof(buffer), 0);
 
@@ -51,6 +53,7 @@ void handleClient(int client_sock)
 
     // Loop through each parsed command
     while (commandReader.isCommandComplete()) {
+      if(role!="master") cout << "Slve Here 3" << endl;
         std::vector<std::string> command_vec = commandReader.getCurrentCommand();
         if (command_vec.empty()) {
             continue; // Skip empty commands
@@ -152,25 +155,7 @@ void handleClient(int client_sock)
   close(client_sock);
 }
 
-std::string escapeCharArray(const char* buffer, int length) {
-    std::string escaped_str;
-    for (int i = 0; i < length; ++i) {
-        switch (buffer[i]) {
-            case '\n':
-                escaped_str += "\\n";
-                break;
-            case '\t':
-                escaped_str += "\\t";
-                break;
-            case '\\':
-                escaped_str += "\\\\";
-                break;
-            default:
-                escaped_str += buffer[i];
-        }
-    }
-    return escaped_str;
-}
+
 
 void handleMasterConnection()
 {
@@ -238,8 +223,8 @@ void handleMasterConnection()
     }
 
     bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
-    std::string escaped_string = escapeCharArray(buffer, sizeof(buffer));
-    cout << "Received: " << escaped_string << endl;
+    cout << "Received: " << buffer << endl;
+    cout << "Slave Here" << endl;
     memset(buffer,0,sizeof(buffer));
     handshake_complete = true;
     std::string response(buffer, bytes_recvd);
