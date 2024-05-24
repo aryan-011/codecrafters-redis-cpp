@@ -127,17 +127,19 @@ std::vector<std::string> CommandReader::readCommand() {
         std::string arrStr(rawBuffer.begin(), start + 1);
         rawBuffer.erase(rawBuffer.begin(), start + 1);
 
-        int numElems = std::stoi(std::string(rawBuffer.begin() + 1, start));
-        numElems *= 2; // Expecting twice the elements due to the format
+        int numElems = std::stoi(std::string(rawBuffer.begin() + 1, start-1)); 
 
         while (numElems && !rawBuffer.empty()) {
-            auto end = std::find(rawBuffer.begin(), rawBuffer.end(), '\n');
+            auto start = std::find(rawBuffer.begin(), rawBuffer.end(), '\n');
+            auto end = std::find(start+1, rawBuffer.end(), '\n');
             if (end >= rawBuffer.end()) 
                 return {};
-
-            arrStr += std::string(rawBuffer.begin(), end + 1);
+            std::string t(rawBuffer.begin(), end + 1);
+            arrStr += t;
+        // std::cout<<"STring"<<R"(arrStr)"<<std::endl;
             rawBuffer.erase(rawBuffer.begin(), end + 1);
             numElems--;
+            elements.push_back(arrStr);
         }
             return parseArray(arrStr);
     }
