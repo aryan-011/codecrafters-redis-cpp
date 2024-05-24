@@ -19,11 +19,13 @@ public:
     void pushContent(char* buffer, int length);
     bool isCommandComplete() const;
     std::vector<std::string> getCurrentCommand();
+    void popCommand();
 
 private:
     std::vector<char> rawBuffer;
     std::deque<std::vector<std::string>> cmnds;
     std::vector<std::string> readCommand();
+    
 };
 
 #endif 

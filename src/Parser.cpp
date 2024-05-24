@@ -91,6 +91,12 @@ std::vector<std::string> CommandReader::getCurrentCommand() {
     return result;
 }
 
+void CommandReader::popCommand() {
+    if (!cmnds.empty()) {
+        cmnds.pop_front();
+    }
+}
+
 std::vector<std::string> CommandReader::readCommand() {
     if (rawBuffer.empty()) {
         return {};
