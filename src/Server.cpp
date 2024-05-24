@@ -232,7 +232,7 @@ void handleMasterConnection()
     // memset(buffer,0,sizeof(buffer));
     handshake_complete = true;
 
-    std::string response(buffer, bytes_recvd);
+    // std::string response(buffer, bytes_recvd);
     std::thread t(handleClient, master_fd,std::ref(commandReader));
     t.detach();
   }
