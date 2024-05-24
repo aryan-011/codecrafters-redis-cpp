@@ -65,7 +65,7 @@ void handleClient(int client_sock)
         for(auto& t:command_vec){
         std::cout<<"recvd"<<t<<std::endl;
         }
-        
+
         if (command == "ECHO" && command_vec.size() > 1) {
             std::string response = encode(command_vec[1]);
             send(client_sock, response.c_str(), response.length(), 0);
@@ -152,6 +152,26 @@ void handleClient(int client_sock)
   close(client_sock);
 }
 
+std::string escapeCharArray(const char* buffer, int length) {
+    std::string escaped_str;
+    for (int i = 0; i < length; ++i) {
+        switch (buffer[i]) {
+            case '\n':
+                escaped_str += "\\n";
+                break;
+            case '\t':
+                escaped_str += "\\t";
+                break;
+            case '\\':
+                escaped_str += "\\\\";
+                break;
+            default:
+                escaped_str += buffer[i];
+        }
+    }
+    return escaped_str;
+}
+
 void handleMasterConnection()
 {
   if(role=="slave"){
@@ -218,7 +238,8 @@ void handleMasterConnection()
     }
 
     bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
-    cout << "Received: " << buffer << endl;
+    std::string escaped_string = escapeCharArray(buffer, sizeof(buffer))
+    cout << "Received: " << escaped_string << endl;
     memset(buffer,0,sizeof(buffer));
     handshake_complete = true;
     std::string response(buffer, bytes_recvd);
