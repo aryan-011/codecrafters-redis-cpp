@@ -224,7 +224,7 @@ void handleMasterConnection()
     }
 
     bytes_recvd = recv(master_fd, buffer, sizeof(buffer), 0);
-    // cout << "Received: " << buffer << endl;
+    cout << "Received: " << buffer <<"end" <<endl;
     CommandReader commandReader;
     commandReader.pushContent(buffer, sizeof(buffer) - 1);
     memset(buffer,0,sizeof(buffer));
