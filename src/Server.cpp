@@ -55,7 +55,7 @@ void handleClient(int client_sock)
     commandReader.pushContent(buffer, sizeof(buffer) - 1);
 
     // Loop through each parsed command
-    while (commandReader.isCommandComplete()) {
+    // while (commandReader.isCommandComplete()) {
       if(role!="master") cout << "Slve Here 3" << endl;
         std::vector<std::string> command_vec = commandReader.getCurrentCommand();
         if (command_vec.empty()) {
@@ -153,7 +153,7 @@ void handleClient(int client_sock)
             replica_sock.insert(client_sock);
           }
       }
-    } 
+    // } 
   }
   close(client_sock);
 }
