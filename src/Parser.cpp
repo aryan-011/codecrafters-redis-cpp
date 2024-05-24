@@ -103,47 +103,47 @@ std::vector<std::string> CommandReader::readCommand() {
     }
 
     if (rawBuffer[0] == '+') {
-        auto end = std::find(rawBuffer.begin(), rawBuffer.end(), '\n');
+        auto end = std::find(rawBuffer.begin(), rawBuffer.end(), '\r');
         if (end == rawBuffer.end()) 
             return {};
 
-        std::string simpleStr(rawBuffer.begin(), end + 1);
-        rawBuffer.erase(rawBuffer.begin(), end + 1);
+        std::string simpleStr(rawBuffer.begin(), end + 2);
+        rawBuffer.erase(rawBuffer.begin(), end + 2);
         return parseSimpleString(simpleStr);
     }
     else if (rawBuffer[0] == '$') {
-        auto start = std::find(rawBuffer.begin(), rawBuffer.end(), '\n');
+        auto start = std::find(rawBuffer.begin(), rawBuffer.end(), '\r');
         if (start == rawBuffer.end()) 
             return {};
 
-        auto end = std::find(start + 1, rawBuffer.end(), '\n');
+        auto end = std::find(start + 2, rawBuffer.end(), '\r');
         if (end == rawBuffer.end()) {
             return {};
         }
 
-        std::string bulkStr(rawBuffer.begin(), end + 1);
-        rawBuffer.erase(rawBuffer.begin(), end + 1);
+        std::string bulkStr(rawBuffer.begin(), end + 2);
+        rawBuffer.erase(rawBuffer.begin(), end + 2);
         return parseBulkString(bulkStr);
     }
     else if (rawBuffer[0] == '*') {
-        auto start = std::find(rawBuffer.begin(), rawBuffer.end(), '\n');
+        auto start = std::find(rawBuffer.begin(), rawBuffer.end(), '\r');
         if (start == rawBuffer.end()) 
             return {};
 
-        std::string arrStr(rawBuffer.begin(), start + 1);
-        rawBuffer.erase(rawBuffer.begin(), start + 1);
+        std::string arrStr(rawBuffer.begin(), start + 2);
+        rawBuffer.erase(rawBuffer.begin(), start + 2);
 
-        int numElems = std::stoi(std::string(rawBuffer.begin() + 1, start-1)); 
+        int numElems = std::stoi(std::string(rawBuffer.begin() + 1, start)); 
 
         while (numElems && !rawBuffer.empty()) {
-            auto start = std::find(rawBuffer.begin(), rawBuffer.end(), '\n');
-            auto end = std::find(start+1, rawBuffer.end(), '\n');
+            auto start = std::find(rawBuffer.begin(), rawBuffer.end(), '\r');
+            auto end = std::find(start+1, rawBuffer.end(), '\r');
             if (end >= rawBuffer.end()) 
                 return {};
-            std::string t(rawBuffer.begin(), end + 1);
+            std::string t(rawBuffer.begin(), end + 2);
             arrStr += t;
         // std::cout<<"STring"<<R"(arrStr)"<<std::endl;
-            rawBuffer.erase(rawBuffer.begin(), end + 1);
+            rawBuffer.erase(rawBuffer.begin(), end + 2);
             numElems--;
             // elements.push_back(arrStr);
         }

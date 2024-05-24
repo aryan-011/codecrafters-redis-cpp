@@ -161,7 +161,7 @@ void handleClient(int client_sock) {
                 if (!command_vec.empty()) {
                     handleCommand(command_vec, client_sock);
                 }
-                commandReader.popCommand();
+                // commandReader.popCommand();
             }
         }
     }
