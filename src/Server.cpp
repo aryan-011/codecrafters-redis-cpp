@@ -48,7 +48,7 @@ void handleClient(int client_sock)
     // std::cout << "Received: " << buffer << std::endl;
 
     // Parse the RESP message
-    cout<<"rcvd"<<buffer<<endl
+    cout<<"rcvd"<<buffer<<endl;
     CommandReader commandReader;
     commandReader.pushContent(buffer, sizeof(buffer) - 1);
 
