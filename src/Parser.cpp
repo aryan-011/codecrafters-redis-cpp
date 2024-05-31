@@ -140,7 +140,7 @@ std::vector<std::string> CommandReader::readCommand() {
             elements.insert(elements.end(), subElements.begin(), subElements.end());
             numElems--;
         }
-        std::cout<<"ARR str " << arrStr << std::endl;
+        // std::cout<<"ARR str " << arrStr << std::endl;
         return elements;
     }
     return {};

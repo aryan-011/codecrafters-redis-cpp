@@ -248,7 +248,7 @@ void handleMasterConnection() {
         message = "*3\r\n$5\r\nPSYNC\r\n$1\r\n?\r\n$2\r\n-1\r\n";
         if (send(master_fd, message.c_str(), message.length(), 0) < 0) {
             spdlog::error("send Failed");
-            close(master_fd);
+            // close(master_fd);
             return;
         }
 
